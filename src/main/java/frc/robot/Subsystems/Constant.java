@@ -39,6 +39,15 @@ public class Constant {
         public static double turnGearRatio = 150.0 / 7.0;
         /**Maximum angular velocity in degrees per second */
         public static double maxAngularVelocityRps = 10.0;
+
+        public static final int PigeonID = 49;
+    }
+    public static final class ArmConstants{
+        public static final int ClawMotor = 19;
+        public static final int WormMotor = 17;
+        public static final double[] WormPositions = new double[]{0, 0, 0}; // TODO Low, Middle, High
+        public static final int ExtendMotor = 13;
+        public static final double[] ExtendPositions = new double[]{0, 0, 0}; // TODO Low, Middle, High
     }
     public static final class ControllerConstants{
         public static double joystickDeadband = 0.1;//a deadband that you must overcome for the joystick input, otherwise we send 0

@@ -1,5 +1,7 @@
 package frc.robot.Subsystems;
 
+import com.ctre.phoenix.sensors.Pigeon2;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -30,8 +32,11 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         // Gyro for now
         // private ADIS16448_IMU gyro;
         // private ADIS16448_IMUSim gyroSim;
-        private ADXRS450_Gyro gyro;
+        private ADXRS450_Gyro gyroFake;
         private ADXRS450_GyroSim gyroSim;
+        private Pigeon2 gyro;
+
+        // TODO make pigeon sim actually like, work
 
         private SwerveDriveKinematics swerveDriveKinematics;
         private SwerveDriveOdometry swerveDriveOdometry;
@@ -39,7 +44,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
     
         public DriveTrainSubsystemRick() {
 //            gyro = new ADIS16448_IMU();
-            gyro = new ADXRS450_Gyro();
+            gyro = new Pigeon2(DriveConstants.PigeonID);
             UpdateGyro();
             LF = new SwerveModule(DriveConstants.LFTurnMotor, DriveConstants.LFDriveMotor, DriveConstants.LFCanID, DriveConstants.LFOff, "LF", this);
             RF = new SwerveModule(DriveConstants.RFTurnMotor, DriveConstants.RFDriveMotor, DriveConstants.RFCanID, DriveConstants.RFOff, "RF", this);
@@ -70,7 +75,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         }
 
         private void UpdateGyro() {
-            lastUpdatedGyroHeading = Rotation2d.fromDegrees(-gyro.getAngle());
+            lastUpdatedGyroHeading = Rotation2d.fromDegrees(gyro.getYaw());
         }
 
         public void drive(Translation2d translation, double rotation){
@@ -86,7 +91,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         public void simulationInit()
         {
 //            gyroSim = new ADIS16448_IMUSim(gyro);
-            gyroSim = new ADXRS450_GyroSim(gyro);
+            gyroSim = new ADXRS450_GyroSim(gyroFake);
             LF.simulateInit();
             RF.simulateInit();
             LB.simulateInit();

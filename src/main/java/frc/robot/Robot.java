@@ -4,10 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -24,9 +28,12 @@ import com.ctre.phoenix.sensors.SensorTimeBase;
 
 import org.opencv.core.Mat;
 
+import frc.robot.Subsystems.ArmSubsystem;
 import frc.robot.Subsystems.DriveTrainInterface;
 import frc.robot.Subsystems.DriveTrainSubsystem;
 import frc.robot.Subsystems.DriveTrainSubsystemRick;
+import frc.robot.Subsystems.Field;
+import frc.robot.commands.ArmControl;
 import frc.robot.commands.TeleopSwerve;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -45,6 +52,9 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   //private DriveTrainSubsystem drive;
   private DriveTrainSubsystemRick drive;
+  private ArmSubsystem arm;
+
+  private Field field = new Field(drive);
 
   private double dif = 0;
   // Constants for angle setting of swerve
@@ -53,6 +63,8 @@ public class Robot extends TimedRobot {
   private double maxturn = 0.5;
 
   private Joystick drivestick = new Joystick(0);
+  private XboxController operator = new XboxController(1);
+  private double[] dummyArray = new double[1];
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -61,6 +73,7 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
+    dummyArray[0] = -1;
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -69,11 +82,12 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("turn", 0);
     SmartDashboard.putNumber("setpos", 0);
 
-
-    
     //if using rick's subsystem uncoment these
     drive = new DriveTrainSubsystemRick();
     drive.setDefaultCommand(new TeleopSwerve(drive, drivestick));
+
+    arm = new ArmSubsystem();
+    arm.setDefaultCommand(new ArmControl(arm, operator));
     //  drive = new DriveTrainSubsystem();
     //  drive.setDefaultCommand(new RunCommand(() -> {
       
@@ -87,8 +101,10 @@ public class Robot extends TimedRobot {
    * <p>This runs after the mode specific periodic functions, but before LiveWindow and
    * SmartDashboard integrated updating.
    */
-  @Override
+  @Override 
   public void robotPeriodic() {
+    // System.out.println("dist: " + SmartDashboard.getNumberArray("aprilTag5", dummyArray)[0]);
+    // System.out.println("ang: " + SmartDashboard.getNumberArray("aprilTag5", dummyArray)[1]);
       // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
@@ -108,6 +124,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    SmartDashboard.putNumber("xSpeed", 0);
+    SmartDashboard.putNumber("ySpeed", 0);
+    SmartDashboard.putNumber("rotationAuto", 0);
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
@@ -116,6 +135,10 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    Translation2d temp = new Translation2d(SmartDashboard.getNumber("xSpeed", 0), SmartDashboard.getNumber("ySpeed", 0));
+    drive.drive(temp, SmartDashboard.getNumber("rotationAuto", 0));
+    // field.setTarget(0, 0, 0);
+    // field.update();
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
