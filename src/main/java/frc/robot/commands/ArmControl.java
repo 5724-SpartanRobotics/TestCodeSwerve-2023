@@ -27,17 +27,23 @@ public class ArmControl extends CommandBase {
         this.controller = controller;
         this.arm = arm;
         addRequirements((SubsystemBase)arm);
- }
+    }
 
     @Override
     public void execute(){
-        arm.zoop(controller.getRightTriggerAxis() - controller.getLeftTriggerAxis());
-        if(controller.getAButtonPressed()) {
-            arm.setArmPosition(0);
-        } else if (controller.getBButtonPressed()) {
-            arm.setArmPosition(1);
-        } else if (controller.getYButtonPressed()) {
-            arm.setArmPosition(2);
+        if(controller.getLeftBumper()) {
+            arm.driveExtension(-1);
+        } else if(controller.getRightBumper()) {
+            arm.driveExtension(1);
+        } else {
+            arm.driveExtension(0);
+        }
+        if(controller.getYButton()) {
+            arm.driveRotation(-1);
+        } else if(controller.getAButton()) {
+            arm.driveRotation(1);
+        } else {
+            arm.driveRotation(0);
         }
     }
 }

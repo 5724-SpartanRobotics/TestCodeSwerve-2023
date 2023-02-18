@@ -45,9 +45,9 @@ public class Constant {
     public static final class ArmConstants{
         public static final int ClawMotor = 19;
         public static final int WormMotor = 17;
-        public static final double[] WormPositions = new double[]{0, 0, 0}; // TODO Low, Middle, High
+        public static final double[] WormPositions = new double[]{0, -115}; // TODO Low, Middle, High
         public static final int ExtendMotor = 13;
-        public static final double[] ExtendPositions = new double[]{0, 0, 0}; // TODO Low, Middle, High
+        public static final double[] ExtendPositions = new double[]{0, 94}; // TODO Low, Middle, High
     }
     public static final class ControllerConstants{
         public static double joystickDeadband = 0.1;//a deadband that you must overcome for the joystick input, otherwise we send 0
@@ -58,5 +58,9 @@ public class Constant {
     public static enum DebugLevel{
         Info,
         Verbose
+    }
+    public static final class AutoConstants {
+        public static final double kPTranslationController = 6.0;
+        public static final double kPThetaController = 6.0;
     }
 }

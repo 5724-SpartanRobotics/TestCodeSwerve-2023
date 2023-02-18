@@ -29,6 +29,9 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         private SwerveModule RB;
         private Rotation2d lastUpdatedGyroHeading;
     
+        // Used by helix, should eventually be used to zero gyro with a button
+        private double offset = 0;
+
         // Gyro for now
         // private ADIS16448_IMU gyro;
         // private ADIS16448_IMUSim gyroSim;
@@ -41,6 +44,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         private SwerveDriveKinematics swerveDriveKinematics;
         private SwerveDriveOdometry swerveDriveOdometry;
         private Pose2d robotPose;
+        private SwerveModule[] modules;
     
         public DriveTrainSubsystemRick() {
 //            gyro = new ADIS16448_IMU();
@@ -54,10 +58,23 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             robotPose = new Pose2d(new Translation2d(4.0, 5.0), new Rotation2d());//starting pose doesn't really matter. We will call reset based on robot initial field position.
             SwerveModulePosition[] swerveInititialPositions = {LF.getPosition(), RF.getPosition(), LB.getPosition(), RB.getPosition()};
             swerveDriveOdometry = new SwerveDriveOdometry(swerveDriveKinematics, getGyroHeading(), swerveInititialPositions, robotPose);
+            modules = new SwerveModule[] {LF, RF, LB, RB};
         }
 
         public Rotation2d getGyroHeading(){
             return lastUpdatedGyroHeading;
+        }
+
+        // Used by helixnavigator
+        public Rotation2d getHeading(){
+            double raw_yaw = gyro.getYaw() - offset; // Returns yaw as -180 to +180.
+            // float raw_yaw = m_ahrs.getYaw(); // Returns yaw as -180 to +180.
+            double calc_yaw = raw_yaw;
+
+            if (0.0 > raw_yaw ) { // yaw is negative
+                calc_yaw += 360.0;
+            }
+            return Rotation2d.fromDegrees(-calc_yaw);
         }
 
         @Override
@@ -110,4 +127,14 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             LB.simulatePeriodic();
             RB.simulatePeriodic();
             }
+
+            // used by helix
+        public void brake() {
+            for (SwerveModule module : modules) {
+                module.setDesiredState(new SwerveModuleState(0, module.getState().angle));
+            }
+        }
+        public Pose2d getPose() {
+            return swerveDriveOdometry.getPoseMeters();
+        }
 }

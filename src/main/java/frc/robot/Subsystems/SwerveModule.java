@@ -92,14 +92,15 @@ public class SwerveModule {
         driveTrainParent = driveTr;
 
         // IDs for cancoder and falcons.
-        turn = new WPI_TalonFX(turnMotor);
+        turn = new WPI_TalonFX(turnMotor); 
         drive = new WPI_TalonFX(driveMotor);
+        drive.setNeutralMode(NeutralMode.Brake);
         canCoder = new CANCoder(canCoderID);
         canCoderName = name + canCoderID;
         turn.configFactoryDefault();
         turn.setNeutralMode(NeutralMode.Brake);
         turn.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 0);
-        turn.config_kP(0, 0.1);
+        turn.config_kP(0, 0.08);
         turn.config_kI(0, 0);
         turn.config_kD(0, 0);
         turn.configForwardSoftLimitEnable(false);
@@ -112,6 +113,8 @@ public class SwerveModule {
         config.unitString = "rad";
         config.sensorTimeBase = SensorTimeBase.PerSecond;
         canCoder.configAllSettings(config);
+
+
     }
 
     // Run this in periodic for all swerves. It just keeps stuff up to speed.

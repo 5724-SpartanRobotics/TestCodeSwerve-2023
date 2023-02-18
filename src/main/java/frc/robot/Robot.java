@@ -35,6 +35,7 @@ import frc.robot.Subsystems.DriveTrainSubsystemRick;
 import frc.robot.Subsystems.Field;
 import frc.robot.commands.ArmControl;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.TestAutoFull;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -48,8 +49,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  private Command m_autoSelected;
+  private final SendableChooser<Command> m_chooser = new SendableChooser<>();
   //private DriveTrainSubsystem drive;
   private DriveTrainSubsystemRick drive;
   private ArmSubsystem arm;
@@ -66,6 +67,8 @@ public class Robot extends TimedRobot {
   private XboxController operator = new XboxController(1);
   private double[] dummyArray = new double[1];
 
+  private Command testAuto;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -73,21 +76,22 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
+    //if using rick's subsystem uncoment these
+    drive = new DriveTrainSubsystemRick();
+    drive.setDefaultCommand(new TeleopSwerve(drive, drivestick));
+    testAuto = new TestAutoFull(drive);
+
+    arm = new ArmSubsystem();
+    arm.setDefaultCommand(new ArmControl(arm, operator));
+
     dummyArray[0] = -1;
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.setDefaultOption("Default Auto", testAuto);
+    // m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
     SmartDashboard.putNumber("drive", 0);
     SmartDashboard.putNumber("turn", 0);
     SmartDashboard.putNumber("setpos", 0);
-
-    //if using rick's subsystem uncoment these
-    drive = new DriveTrainSubsystemRick();
-    drive.setDefaultCommand(new TeleopSwerve(drive, drivestick));
-
-    arm = new ArmSubsystem();
-    arm.setDefaultCommand(new ArmControl(arm, operator));
     //  drive = new DriveTrainSubsystem();
     //  drive.setDefaultCommand(new RunCommand(() -> {
       
@@ -130,6 +134,8 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    m_chooser.getSelected().schedule();
+    CommandScheduler.getInstance().run();
   }
 
   /** This function is called periodically during autonomous. */
@@ -139,15 +145,6 @@ public class Robot extends TimedRobot {
     drive.drive(temp, SmartDashboard.getNumber("rotationAuto", 0));
     // field.setTarget(0, 0, 0);
     // field.update();
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
   }
 
   /** This function is called once when teleop is enabled. */
@@ -195,3 +192,4 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {
   }
 }
+// if push input A them move left 
