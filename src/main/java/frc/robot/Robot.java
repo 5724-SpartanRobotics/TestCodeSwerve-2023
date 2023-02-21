@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -16,6 +17,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.io.File;
 
 import javax.print.CancelablePrintJob;
 
@@ -36,6 +39,7 @@ import frc.robot.Subsystems.Field;
 import frc.robot.commands.ArmControl;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestAutoFull;
+import frc.robot.commands.HelixAutoTools.TrajectoriesManager;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -47,6 +51,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
  * project.
  */
 public class Robot extends TimedRobot {
+  private TrajectoriesManager trajectoriesManager = new TrajectoriesManager(new File(Filesystem.getDeployDirectory(), "trajectories/"));
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private Command m_autoSelected;
@@ -76,10 +81,12 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
+    System.out.println(Filesystem.getDeployDirectory());
+    trajectoriesManager.loadAllTrajectories();
     //if using rick's subsystem uncoment these
     drive = new DriveTrainSubsystemRick();
     drive.setDefaultCommand(new TeleopSwerve(drive, drivestick));
-    testAuto = new TestAutoFull(drive);
+    testAuto = new TestAutoFull(drive, trajectoriesManager);
 
     arm = new ArmSubsystem();
     arm.setDefaultCommand(new ArmControl(arm, operator));
