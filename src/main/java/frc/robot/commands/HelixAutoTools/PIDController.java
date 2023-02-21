@@ -1,5 +1,5 @@
 package frc.robot.commands.HelixAutoTools;
-
+//This PID controller is for autonomous mode for helix path following
 public class PIDController {
     private double kP, kD, kI;
     private double derivative, integral, lastError;
