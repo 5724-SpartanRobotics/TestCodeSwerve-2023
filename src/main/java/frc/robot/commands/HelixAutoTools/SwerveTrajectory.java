@@ -137,8 +137,8 @@ public class SwerveTrajectory {
                     throws IOException, JsonProcessingException {
                 JsonNode node = p.getCodec().readTree(p);
                 Pose2d pose = new Pose2d(node.get("x").asDouble(), node.get("y").asDouble(), new Rotation2d(node.get("heading").asDouble()));
-                Vector3d velocity = new Vector3d(node.get("vx").asDouble(), node.get("vy").asDouble(), node.get("omega").asDouble());
-                return new State(node.get("ts").asDouble(), pose, velocity);
+                Vector3d velocity = new Vector3d(node.get("velocityX").asDouble(), node.get("velocityY").asDouble(), node.get("angularVelocity").asDouble());
+                return new State(node.get("timestamp").asDouble(), pose, velocity);
             }
         }
     }

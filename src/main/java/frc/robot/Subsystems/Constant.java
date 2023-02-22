@@ -43,7 +43,7 @@ public class Constant {
         public static final int PigeonID = 49;
     }
     public static final class ArmConstants{
-        public static final int ClawMotor = 19;
+        public static final int ClawMotor = 15;
         public static final int WormMotor = 17;
         public static final double[] WormPositions = new double[]{0, -115}; // TODO Low, Middle, High
         public static final int ExtendMotor = 13;
