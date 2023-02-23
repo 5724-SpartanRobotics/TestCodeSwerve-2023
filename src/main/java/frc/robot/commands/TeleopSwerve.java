@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems.DriveTrainInterface;
 import frc.robot.Subsystems.Constant.ControllerConstants;
+import frc.robot.Subsystems.Constant.DebugLevel;
+import frc.robot.Subsystems.Constant.DebugSetting;
 import frc.robot.Subsystems.Constant.DriveConstants;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class TeleopSwerve extends CommandBase {
     private Joystick controller;
@@ -25,7 +25,7 @@ public class TeleopSwerve extends CommandBase {
         this.controller = controller;
         this.swerveDrive = swerveDrive;
         addRequirements((SubsystemBase)swerveDrive);
-        if (TimedRobot.isSimulation())
+        if (TimedRobot.isSimulation() && DebugSetting.TraceLevel == DebugLevel.All)
         {
             SmartDashboard.putNumber("JoyStickY", 0.0);
             SmartDashboard.putNumber("JoyStickX", 0.0);
@@ -61,12 +61,6 @@ public class TeleopSwerve extends CommandBase {
 
         
         
-        // if (TimedRobot.isSimulation())
-        // {
-        //     yAxis = SmartDashboard.getNumber("JoyStickY", 0.0);
-        //     xAxis = SmartDashboard.getNumber("JoyStickX", 0.0);
-        //     zAxis = SmartDashboard.getNumber("JoyStickZ", 0.0);
-        // }
         yAxis = (Math.abs(yAxis) < ControllerConstants.joystickDeadband) ? 0 : yAxis;
         xAxis = (Math.abs(xAxis) < ControllerConstants.joystickDeadband) ? 0 : xAxis;
         zAxis = (Math.abs(zAxis) < ControllerConstants.joystickDeadband) ? 0 : zAxis;

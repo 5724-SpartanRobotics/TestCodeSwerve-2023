@@ -1,7 +1,6 @@
 package frc.robot.Subsystems;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 public class Constant {
@@ -45,19 +44,30 @@ public class Constant {
     public static final class ArmConstants{
         public static final int ClawMotor = 15;
         public static final int WormMotor = 17;
-        public static final double[] WormPositions = new double[]{0, -115}; // TODO Low, Middle, High
+        public static final double WormMotorRotationsPerInch = 20;//gear ratio is 4 and the worm gear has 5 turns per inch
+        public static final double WormPositionMax = 20;//inches of rod
+        public static final double WormPositionFrontCone = 19;
+        public static final double WormPositionMin = 0;//inches of rod
+        public static final double WormPositionOutsideRobot = 6; //inches of rod
+        public static final double ExtendMotorRotationsPerInch = 3.8197;//Spool size is 1" circumfrence is pi, therefore 1/pi spool rotations = 1 inch. Gear box is 12:1.
         public static final int ExtendMotor = 13;
-        public static final double[] ExtendPositions = new double[]{0, 94}; // TODO Low, Middle, High
+        public static final double ExtendPositionMax = 20; //inches
+        public static final double ExtendPositionFrontCone = 5;
+        public static final double ExtendPositionFloorCone = 3;
+        public static final double ExtendPositionFloorCube = 1;
+        public static final double ExtendPositionMin = 0; //inches
     }
     public static final class ControllerConstants{
         public static double joystickDeadband = 0.1;//a deadband that you must overcome for the joystick input, otherwise we send 0
     }
     public static final class DebugSetting{
-        public static final DebugLevel TraceLevel = DebugLevel.Verbose;//set this to verbose to get more values to smart dashboard.
+        public static final DebugLevel TraceLevel = DebugLevel.Arm;//set this to get more values to smart dashboard.
     }
     public static enum DebugLevel{
-        Info,
-        Verbose
+        Off,
+        Swerve,
+        Arm,
+        All
     }
     public static final class AutoConstants {
         public static final double kPTranslationController = 6.0;

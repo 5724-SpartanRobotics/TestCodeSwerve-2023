@@ -187,7 +187,7 @@ public class SwerveModule {
     private void resetTurnToAbsolute(){
         //get the absolute encoder position and subtract the starting offset, to be used to reset the encoder so it knows where we are
         double absPosition = Conversions.radiansToFalcon(canCoder.getAbsolutePosition() - offset);
-        if (DebugSetting.TraceLevel == DebugLevel.Verbose){
+        if (DebugSetting.TraceLevel == DebugLevel.Swerve || DebugSetting.TraceLevel == DebugLevel.All){
             SmartDashboard.putNumber(Name + "Posn abs", absPosition);
         }
         //negate the position. The cancoder increases while the motor encoder decreases
@@ -229,14 +229,14 @@ public class SwerveModule {
     public void setDesiredState(SwerveModuleState desiredState){
         desiredState = CTREModuleState.optimize(desiredState, getState().angle);
         driveSpeed = desiredState.speedMetersPerSecond / DriveConstants.maxRobotSpeedmps;
-        if (DebugSetting.TraceLevel == DebugLevel.Verbose){
+        if (DebugSetting.TraceLevel == DebugLevel.Swerve || DebugSetting.TraceLevel == DebugLevel.All){
             SmartDashboard.putNumber(Name + " DriveRef", driveSpeed);
         }
         drive.set(ControlMode.PercentOutput, driveSpeed);
 
         //if desired speed is less than 1 percent, keep the angle where it was to prevent jittering
         double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (DriveConstants.maxRobotSpeedmps * 0.01)) ? driveAngle : desiredState.angle.getRadians();
-        if (DebugSetting.TraceLevel == DebugLevel.Verbose){
+        if (DebugSetting.TraceLevel == DebugLevel.Swerve || DebugSetting.TraceLevel == DebugLevel.All){
             SmartDashboard.putNumber(Name + " TurnRef", Units.radiansToDegrees(angle));
         }
         turn.set(ControlMode.Position, -Conversions.radiansToFalcon(angle));
@@ -244,7 +244,7 @@ public class SwerveModule {
     }
 
     public void periodic(){
-        if (DebugSetting.TraceLevel == DebugLevel.Verbose){
+        if (DebugSetting.TraceLevel == DebugLevel.Swerve || DebugSetting.TraceLevel == DebugLevel.All){
             SmartDashboard.putNumber("Pos FB " + Name, Units.radiansToDegrees(Conversions.falconToRadians(turn.getSelectedSensorPosition())));
             SmartDashboard.putNumber(canCoderName,  Units.radiansToDegrees(canCoder.getAbsolutePosition() - offset));
         }

@@ -1,18 +1,11 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems.ArmSubsystem;
-import frc.robot.Subsystems.DriveTrainInterface;
-import frc.robot.Subsystems.Constant.ControllerConstants;
-import frc.robot.Subsystems.Constant.DriveConstants;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class ArmControl extends CommandBase {
     private XboxController controller;
@@ -31,18 +24,40 @@ public class ArmControl extends CommandBase {
 
     @Override
     public void execute(){
+        if (!RobotState.isTeleop())
+           return;
         if(controller.getLeftBumper()) {
+            //jog retract
             arm.driveExtension(-1);
         } else if(controller.getRightBumper()) {
+            //jog extend
             arm.driveExtension(1);
+        } else if (controller.getXButton()) {
+            //Set extend position to front pole
+            arm.frontExtendPos();
+        } else if (controller.getBButton()) {
+            // extend at floor height of cone
+            arm.cubeFloorPos();
+        } else if (controller.getAButton()) {
+            // Tuck in extend posn (which is hopefully also floor cone pickup height)
+            arm.tuckInExtendPos();
         } else {
+            //stop jog
             arm.driveExtension(0);
         }
-        if(controller.getYButton()) {
+        //getPOV returns an angle for the POV control. Upper button is 0 and the degrees are positive 
+        // for the clockwise direction. It has a value of -1 for nothing pressed.
+        if(controller.getPOV() == 180) {
+            //jog worm down
             arm.driveRotation(-1);
-        } else if(controller.getAButton()) {
+        } else if(controller.getPOV() == 0) {
+            //jog worm up
             arm.driveRotation(1);
+        } else if (controller.getYButton()) {
+            //Set hoist position to front pole height
+            arm.frontHoistPos();
         } else {
+            //stop jog. 
             arm.driveRotation(0);
         }
     }

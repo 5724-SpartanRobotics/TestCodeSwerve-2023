@@ -10,10 +10,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.ADIS16448_IMU;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.simulation.ADIS16448_IMUSim;
 import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,7 +31,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         // Gyro for now
         // private ADIS16448_IMU gyro;
         // private ADIS16448_IMUSim gyroSim;
-        private ADXRS450_Gyro gyroFake;
+  //      private ADXRS450_Gyro gyroFake;
         private ADXRS450_GyroSim gyroSim;
         private Pigeon2 gyro;
 
@@ -84,7 +80,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             LB.periodic();
             RF.periodic();
             RB.periodic();
-            if (DebugSetting.TraceLevel == DebugLevel.Verbose){
+            if (DebugSetting.TraceLevel == DebugLevel.Swerve || DebugSetting.TraceLevel == DebugLevel.All){
                 SmartDashboard.putNumber("Gyro Heading Deg", getGyroHeading().getDegrees());
             }
             UpdateGyro();
@@ -108,20 +104,20 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         public void simulationInit()
         {
 //            gyroSim = new ADIS16448_IMUSim(gyro);
-            gyroSim = new ADXRS450_GyroSim(gyroFake);
+//            gyroSim = new ADXRS450_GyroSim(gyroFake);
             LF.simulateInit();
             RF.simulateInit();
             LB.simulateInit();
             RB.simulateInit();
 //          gyroSim.setGyroAngleY(0);
-            gyroSim.setAngle(0);
+//            gyroSim.setAngle(0);
         }
         @Override
         public void simulationPeriodic(){
             if (gyroSim == null)
                 simulationInit();
 //            gyroSim.setGyroAngleY(Units.radiansToDegrees(0.0));
-            gyroSim.setAngle(0.0);
+//            gyroSim.setAngle(0.0);
             LF.simulatePeriodic();
             RF.simulatePeriodic();
             LB.simulatePeriodic();
