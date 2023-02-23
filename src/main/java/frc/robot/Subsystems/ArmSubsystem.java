@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,6 +40,10 @@ public class ArmSubsystem extends SubsystemBase {
         claw.restoreFactoryDefaults();
         worm.restoreFactoryDefaults();
         extend.restoreFactoryDefaults();
+        extend.setIdleMode(IdleMode.kBrake);
+        worm.setIdleMode(IdleMode.kBrake);
+        claw.setIdleMode(IdleMode.kBrake);
+        worm.setInverted(true);
         wormPidControl.setP(0.00005);
         wormPidControl.setD(0);
         wormPidControl.setI(0);
@@ -57,6 +62,10 @@ public class ArmSubsystem extends SubsystemBase {
 
         setExtendLimitToDefault();
         setWormLimitToDefault();
+    }
+
+    public void zoop(double speed) {
+        claw.set(speed  * ArmConstants.ClawMaxPercent);
     }
 
     private void setExtendLimitToDefault()
@@ -93,15 +102,15 @@ public class ArmSubsystem extends SubsystemBase {
         }
         //set extend and rotate limits based on position feedbacks
         // if the total extend is greater than the current room to the floor, freeze the min worm limit
-        if (extendEncoder.getPosition() + extendFixedArmInEncoderCounts >
-         extendMotorCountsFor42InchHeight + (wormEncoder.getPosition() * ArmConstants.ExtendMotorRotationsPerInch / ArmConstants.WormMotorRotationsPerInch)) {
-            setWormLimitToCurrent();
-            setExtendLimitToCurrent();
-        }
-        else {
-            setExtendLimitToDefault();
-            setWormLimitToDefault();
-        }
+        // if (extendEncoder.getPosition() + extendFixedArmInEncoderCounts >
+        //  extendMotorCountsFor42InchHeight + (wormEncoder.getPosition() * ArmConstants.ExtendMotorRotationsPerInch / ArmConstants.WormMotorRotationsPerInch)) {
+        //     setWormLimitToCurrent();
+        //     setExtendLimitToCurrent();
+        // }
+        // else {
+        //     setExtendLimitToDefault();
+        //     setWormLimitToDefault();
+        // }
         //The teleop and autonomus commands set up the references
         // send the ref to the PID controllers.
         // The reference will be linited in the send methods.
@@ -133,11 +142,11 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     private void sendExtendPosToPidController() {
-        if (wormPosRef < wormMinLimit)
-            wormPosClampped = wormMinLimit;
+        if (extendPosRef > extendMaxLimit)
+            extendPosClamped = extendMaxLimit;
         else
-            wormPosClampped = wormPosRef;
-        wormPidControl.setReference(wormPosClampped, ControlType.kSmartMotion);
+            extendPosClamped = extendPosRef;
+        extendPidControl.setReference(extendPosClamped, ControlType.kSmartMotion);
     }
     /**
      * -1 = Jog telescoping reverse, 1 = forward
@@ -163,11 +172,11 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     private void sendWormRefToPidController() {
-        if (extendPosRef > extendMaxLimit)
-            extendPosClamped = extendMaxLimit;
+        if (wormPosRef < wormMinLimit)
+            wormPosClampped = wormMinLimit;
         else
-            extendPosClamped = extendPosRef;
-        wormPidControl.setReference(extendPosClamped, ControlType.kSmartMotion);
+            wormPosClampped = wormPosRef;
+        wormPidControl.setReference(wormPosClampped, ControlType.kSmartMotion);
     }
 
     /**

@@ -44,6 +44,7 @@ public class Constant {
     public static final class ArmConstants{
         public static final int ClawMotor = 15;
         public static final int WormMotor = 17;
+        public static final double ClawMaxPercent = 0.25;
         public static final double WormMotorRotationsPerInch = 20;//gear ratio is 4 and the worm gear has 5 turns per inch
         public static final double WormPositionMax = 20;//inches of rod
         public static final double WormPositionFrontCone = 19;

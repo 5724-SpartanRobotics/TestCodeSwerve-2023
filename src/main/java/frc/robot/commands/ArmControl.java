@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems.ArmSubsystem;
@@ -60,5 +59,7 @@ public class ArmControl extends CommandBase {
             //stop jog. 
             arm.driveRotation(0);
         }
+        //set the claw motor speed
+        arm.zoop(controller.getLeftTriggerAxis() - controller.getRightTriggerAxis());
     }
 }
