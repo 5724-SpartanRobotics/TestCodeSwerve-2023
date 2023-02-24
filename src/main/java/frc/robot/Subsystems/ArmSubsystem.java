@@ -16,6 +16,7 @@ import frc.robot.Subsystems.Constant.DebugSetting;
 public class ArmSubsystem extends SubsystemBase {
 
     private CANSparkMax claw = new CANSparkMax(ArmConstants.ClawMotor, MotorType.kBrushless);
+    private SparkMaxPIDController clawPidController = claw.getPIDController();
     private CANSparkMax worm = new CANSparkMax(ArmConstants.WormMotor, MotorType.kBrushless);
     private SparkMaxPIDController wormPidControl = worm.getPIDController();
     private CANSparkMax extend = new CANSparkMax(ArmConstants.ExtendMotor, MotorType.kBrushless);
@@ -44,11 +45,11 @@ public class ArmSubsystem extends SubsystemBase {
         worm.setIdleMode(IdleMode.kBrake);
         claw.setIdleMode(IdleMode.kBrake);
         worm.setInverted(true);
+
         wormPidControl.setP(0.00005);
         wormPidControl.setD(0);
         wormPidControl.setI(0);
         wormPidControl.setFF(0);
-        wormPidControl.setOutputRange(-1, 1);
         wormPidControl.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
         wormPidControl.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
 
@@ -56,16 +57,21 @@ public class ArmSubsystem extends SubsystemBase {
         extendPidControl.setD(0);
         extendPidControl.setI(0);
         extendPidControl.setFF(0.0);
-        extendPidControl.setOutputRange(-1, 1);
         extendPidControl.setSmartMotionMaxVelocity(maxVel * 2, smartMotionSlot);
         extendPidControl.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
+
+        //The claw motor uses smart motion in velocity mode to control speed
+        clawPidController.setP(0.0005);
+        clawPidController.setSmartMotionMaxVelocity(5000, 0);
+        clawPidController.setSmartMotionMaxAccel(5000, 0);
+        claw.setSmartCurrentLimit(10, 30);
 
         setExtendLimitToDefault();
         setWormLimitToDefault();
     }
 
     public void zoop(double speed) {
-        claw.set(speed  * ArmConstants.ClawMaxPercent);
+        clawPidController.setReference(speed  * ArmConstants.ClawMaxPercent, ControlType.kVelocity);
     }
 
     private void setExtendLimitToDefault()
