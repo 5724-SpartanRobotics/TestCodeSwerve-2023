@@ -23,19 +23,32 @@ public class ArmSubsystem extends SubsystemBase {
     private SparkMaxPIDController extendPidControl = extend.getPIDController();
     private RelativeEncoder wormEncoder = worm.getEncoder();
     private RelativeEncoder extendEncoder = extend.getEncoder();
-    int smartMotionSlot = 0;
-    double maxVel = 1800; // rpm  
-    double maxAcc = 3600; //rpm/sec
     double extendPosRef = 0;
     double wormPosRef = 0;
-    double wormPosClampped;
-    double extendPosClamped;
     Boolean wormFreezeSet = false;
     Boolean extendFreezeSet = false;
-    double extendMaxLimit;
-    double wormMinLimit;
     double extendFixedArmInEncoderCounts = 34 * ArmConstants.ExtendMotorRotationsPerInch;
     double extendMotorCountsFor42InchHeight = 42 * ArmConstants.ExtendMotorRotationsPerInch;
+
+    Boolean tunePidMode = false;//set to true to have position refs and gains set from smart dashboard.
+    //The reference to the PID is in motor rotations, but all the gains and feed forward are normalized
+    // to 1 = max, -1 = min
+    double worm_kP = 0.00005;
+    double worm_kI = 0.0;
+    double worm_kD = 0.0;
+    double worm_kFF = 0.001;
+
+    double extend_kP = 0.00005;
+    double extend_kI = 0.0;
+    double extend_kD = 0.0;
+    double extend_kFF = -0.001;
+
+    double wormMaxVel = 1800; // rpm  
+    double wormMaxAcc = 3600; //rpm/sec
+    double extendMaxVel = 1800; // rpm  
+    double extendMaxAcc = 3600; //rpm/sec
+
+
 
     public ArmSubsystem() {
         claw.restoreFactoryDefaults();
@@ -46,19 +59,7 @@ public class ArmSubsystem extends SubsystemBase {
         claw.setIdleMode(IdleMode.kBrake);
         worm.setInverted(true);
 
-        wormPidControl.setP(0.00005);
-        wormPidControl.setD(0);
-        wormPidControl.setI(0);
-        wormPidControl.setFF(0);
-        wormPidControl.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
-        wormPidControl.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
-
-        extendPidControl.setP(0.00005);
-        extendPidControl.setD(0);
-        extendPidControl.setI(0);
-        extendPidControl.setFF(0.0);
-        extendPidControl.setSmartMotionMaxVelocity(maxVel * 2, smartMotionSlot);
-        extendPidControl.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
+        SetPidGainsForWormAndExtend();
 
         //The claw motor uses smart motion in velocity mode to control speed
         clawPidController.setP(0.0005);
@@ -66,33 +67,34 @@ public class ArmSubsystem extends SubsystemBase {
         clawPidController.setSmartMotionMaxAccel(5000, 0);
         claw.setSmartCurrentLimit(10, 30);
 
-        setExtendLimitToDefault();
-        setWormLimitToDefault();
+        if (tunePidMode)
+            PutTuneValuesToSmartDashboard();
     }
 
+    private void SetPidGainsForWormAndExtend() {
+        wormPidControl.setP(worm_kP);
+        wormPidControl.setD(worm_kD);
+        wormPidControl.setI(worm_kI);
+        wormPidControl.setFF(worm_kFF);
+        wormPidControl.setSmartMotionMaxVelocity(wormMaxVel, 0);
+        wormPidControl.setSmartMotionMaxAccel(wormMaxAcc, 0);
+
+        extendPidControl.setP(extend_kP);
+        extendPidControl.setD(extend_kD);
+        extendPidControl.setI(extend_kI);
+        extendPidControl.setFF(extend_kFF);
+        extendPidControl.setSmartMotionMaxVelocity(extendMaxVel, 0);
+        extendPidControl.setSmartMotionMaxAccel(extendMaxAcc, 0);
+    }
+
+    /**
+     * speed reference to the claw
+     * @param speed
+     */
     public void zoop(double speed) {
         clawPidController.setReference(speed  * ArmConstants.ClawMaxPercent, ControlType.kVelocity);
     }
 
-    private void setExtendLimitToDefault()
-    {
-        extendMaxLimit = ArmConstants.ExtendPositionMax * ArmConstants.ExtendMotorRotationsPerInch;
-    }
-
-    private void setWormLimitToDefault()
-    {
-        wormMinLimit = ArmConstants.WormPositionMin * ArmConstants.WormMotorRotationsPerInch;
-    }
-
-    private void setExtendLimitToCurrent()
-    {
-        extendMaxLimit = extendEncoder.getPosition();
-    }
-
-    private void setWormLimitToCurrent()
-    {
-        wormMinLimit = wormEncoder.getPosition();
-    }
 
     @Override
     public void periodic() {
@@ -101,27 +103,99 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("ExtendPosFbk", extendEncoder.getPosition());
             SmartDashboard.putNumber("ExtendPosRef", extendPosRef);
             SmartDashboard.putNumber("WormPosRef", wormPosRef);
-            SmartDashboard.putNumber("ExtendPosClamped", extendPosClamped);
-            SmartDashboard.putNumber("WormPosClamped", wormPosClampped);
-            SmartDashboard.putNumber("ExtendMaxLimit", extendMaxLimit);
-            SmartDashboard.putNumber("WormMinLimit", wormMinLimit);
         }
-        //set extend and rotate limits based on position feedbacks
-        // if the total extend is greater than the current room to the floor, freeze the min worm limit
-        // if (extendEncoder.getPosition() + extendFixedArmInEncoderCounts >
-        //  extendMotorCountsFor42InchHeight + (wormEncoder.getPosition() * ArmConstants.ExtendMotorRotationsPerInch / ArmConstants.WormMotorRotationsPerInch)) {
-        //     setWormLimitToCurrent();
-        //     setExtendLimitToCurrent();
-        // }
-        // else {
-        //     setExtendLimitToDefault();
-        //     setWormLimitToDefault();
-        // }
+
+        if (tunePidMode)
+        {
+            ReadTuningRefsAndGainsFromSmartDashboard();
+        }
         //The teleop and autonomus commands set up the references
         // send the ref to the PID controllers.
         // The reference will be linited in the send methods.
         sendExtendPosToPidController();
         sendWormRefToPidController();
+    }
+
+    private void PutTuneValuesToSmartDashboard()
+    {
+        SmartDashboard.putNumber("wormKP", worm_kP);
+        SmartDashboard.putNumber("wormKI", worm_kI);
+        SmartDashboard.putNumber("wormFF", worm_kFF);
+        SmartDashboard.putNumber("wormMaxVel", wormMaxVel);
+        SmartDashboard.putNumber("wormMaxAcc", wormMaxAcc);
+        SmartDashboard.putNumber("extendKP", extend_kP);
+        SmartDashboard.putNumber("extendKI", extend_kI);
+        SmartDashboard.putNumber("extendFF", extend_kFF);
+        SmartDashboard.putNumber("extendMaxVel", extendMaxVel);
+        SmartDashboard.putNumber("extendMaxAcc", extendMaxAcc);
+        SmartDashboard.putNumber("WormTunePosRef", wormPosRef);
+        SmartDashboard.putNumber("ExtendTunePosRef", extendPosRef);
+    }
+    private void ReadTuningRefsAndGainsFromSmartDashboard() {
+        double wormkP = SmartDashboard.getNumber("wormKP", worm_kP);
+        double wormkI = SmartDashboard.getNumber("wormKI", worm_kI);
+        double wormkFF = SmartDashboard.getNumber("wormFF", worm_kFF);
+        double wormMVel = SmartDashboard.getNumber("wormMaxVel", wormMaxVel);
+        double wormMAcc = SmartDashboard.getNumber("wormMaxAcc", wormMaxAcc);
+        double extendkP = SmartDashboard.getNumber("extendKP", extend_kP);
+        double extendkI = SmartDashboard.getNumber("extendKI", extend_kI);
+        double extendkFF = SmartDashboard.getNumber("extendFF", extend_kFF);
+        double extendMVel = SmartDashboard.getNumber("extendMaxVel", extendMaxVel);
+        double extendMAcc = SmartDashboard.getNumber("extendMaxAcc", extendMaxAcc);
+
+        SmartDashboard.putNumber("Worm IA", worm.getOutputCurrent());
+        SmartDashboard.putNumber("Worm Spd", wormEncoder.getVelocity());
+        SmartDashboard.putNumber("Extend IA", extend.getOutputCurrent());
+        SmartDashboard.putNumber("Extend Spd", extendEncoder.getVelocity());
+
+        //values in motor turns
+        wormPosRef = SmartDashboard.getNumber("WormTunePosRef", wormPosRef);
+        extendPosRef = SmartDashboard.getNumber("ExtendTunePosRef", extendPosRef);
+
+        //set the values if they are different
+        Boolean diff = false;
+        if (wormkP != worm_kP){
+            worm_kP = wormkP;
+            diff = true;
+        }
+        if (wormkI != worm_kI){
+            worm_kI = wormkI;
+            diff = true;
+        }
+        if (wormkFF != worm_kFF){
+            worm_kFF = wormkFF;
+            diff = true;
+        }
+        if (wormMVel != wormMaxVel){
+            wormMaxVel = wormMVel;
+            diff = true;
+        }
+        if (wormMAcc != wormMaxAcc){
+            wormMaxAcc = wormMAcc;
+            diff = true;
+        }
+        if (extendkP != extend_kP){
+            extend_kP = extendkP;
+            diff = true;
+        }
+        if (extendkI != extend_kI){
+            worm_kI = extendkI;
+            diff = true;
+        }
+        if (extendkFF != extend_kFF){
+            extend_kFF = extendkFF;
+            diff = true;
+        }
+        if (extendMVel != extendMaxVel){
+            extendMaxVel = extendMVel;
+            diff = true;
+        }
+        if (extendMAcc != extendMaxAcc){
+            extendMaxAcc = extendMAcc;
+            diff = true;
+        }
+        if (diff)
+            SetPidGainsForWormAndExtend();
     }
 
      /**
@@ -148,11 +222,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     private void sendExtendPosToPidController() {
-        if (extendPosRef > extendMaxLimit)
-            extendPosClamped = extendMaxLimit;
-        else
-            extendPosClamped = extendPosRef;
-        extendPidControl.setReference(extendPosClamped, ControlType.kSmartMotion);
+        extendPidControl.setReference(extendPosRef, ControlType.kSmartMotion);
     }
     /**
      * -1 = Jog telescoping reverse, 1 = forward
@@ -178,11 +248,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     private void sendWormRefToPidController() {
-        if (wormPosRef < wormMinLimit)
-            wormPosClampped = wormMinLimit;
-        else
-            wormPosClampped = wormPosRef;
-        wormPidControl.setReference(wormPosClampped, ControlType.kSmartMotion);
+        wormPidControl.setReference(wormPosRef, ControlType.kSmartMotion);
     }
 
     /**
