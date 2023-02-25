@@ -30,26 +30,25 @@ public class ArmSubsystem extends SubsystemBase {
     double extendFixedArmInEncoderCounts = 34 * ArmConstants.ExtendMotorRotationsPerInch;
     double extendMotorCountsFor42InchHeight = 42 * ArmConstants.ExtendMotorRotationsPerInch;
 
-    Boolean tunePidMode = false;//set to true to have position refs and gains set from smart dashboard.
+    Boolean tunePidMode = true;//set to true to have position refs and gains set from smart dashboard.
     //The reference to the PID is in motor rotations, but all the gains and feed forward are normalized
     // to 1 = max, -1 = min
-    double worm_kP = 0.00005;
+    double worm_kP = 0.000005;
     double worm_kI = 0.0;
     double worm_kD = 0.0;
     double worm_kFF = 0.001;
-
-    double extend_kP = 0.00005;
-    double extend_kI = 0.0;
-    double extend_kD = 0.0;
-    double extend_kFF = -0.001;
-
     double wormMaxVel = 1800; // rpm  
     double wormMaxAcc = 3600; //rpm/sec
-    double extendMaxVel = 1800; // rpm  
-    double extendMaxAcc = 3600; //rpm/sec
+
+    double extend_kP = 0.0002;
+    double extend_kI = 0.00000007;
+    double extend_kD = 0.0;
+    double extend_kFF = 0.00;
+    double extendMaxVel = 2300; // rpm  
+    double extendMaxAcc = 1500; //rpm/sec
 
 
-
+    
     public ArmSubsystem() {
         claw.restoreFactoryDefaults();
         worm.restoreFactoryDefaults();
@@ -179,7 +178,7 @@ public class ArmSubsystem extends SubsystemBase {
             diff = true;
         }
         if (extendkI != extend_kI){
-            worm_kI = extendkI;
+            extend_kI = extendkI;
             diff = true;
         }
         if (extendkFF != extend_kFF){
@@ -206,6 +205,7 @@ public class ArmSubsystem extends SubsystemBase {
     public void driveRotation(double speed) {
         if (speed > 0)
         {
+
             wormPosRef = ArmConstants.WormPositionMax * ArmConstants.WormMotorRotationsPerInch;
             wormFreezeSet = false;
         }
