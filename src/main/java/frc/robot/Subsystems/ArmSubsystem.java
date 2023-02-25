@@ -16,6 +16,7 @@ import frc.robot.Subsystems.Constant.DebugSetting;
 public class ArmSubsystem extends SubsystemBase {
 
     private CANSparkMax claw = new CANSparkMax(ArmConstants.ClawMotor, MotorType.kBrushless);
+    private RelativeEncoder clawEncoder = claw.getEncoder();
     private SparkMaxPIDController clawPidController = claw.getPIDController();
     private CANSparkMax worm = new CANSparkMax(ArmConstants.WormMotor, MotorType.kBrushless);
     private SparkMaxPIDController wormPidControl = worm.getPIDController();
@@ -33,12 +34,12 @@ public class ArmSubsystem extends SubsystemBase {
     Boolean tunePidMode = true;//set to true to have position refs and gains set from smart dashboard.
     //The reference to the PID is in motor rotations, but all the gains and feed forward are normalized
     // to 1 = max, -1 = min
-    double worm_kP = 0.000005;
-    double worm_kI = 0.0;
+    double worm_kP = 0.00018;
+    double worm_kI = 0.000000007;
     double worm_kD = 0.0;
-    double worm_kFF = 0.001;
-    double wormMaxVel = 1800; // rpm  
-    double wormMaxAcc = 3600; //rpm/sec
+    double worm_kFF = 0.00;
+    double wormMaxVel = 2500; // rpm  
+    double wormMaxAcc = 1800; //rpm/sec
 
     double extend_kP = 0.0002;
     double extend_kI = 0.00000007;
@@ -46,6 +47,11 @@ public class ArmSubsystem extends SubsystemBase {
     double extend_kFF = 0.00;
     double extendMaxVel = 2300; // rpm  
     double extendMaxAcc = 1500; //rpm/sec
+
+    double claw_kP = 0.0001;
+    double clawMaxVel = 5000; //rpm
+    double clawMaxAcc = 5000; //rpm/sec
+    double clawSpeedRef = 0;
 
 
     
@@ -58,19 +64,14 @@ public class ArmSubsystem extends SubsystemBase {
         claw.setIdleMode(IdleMode.kBrake);
         worm.setInverted(true);
 
-        SetPidGainsForWormAndExtend();
+        SetPidGainsForWormExtendClaw();
 
-        //The claw motor uses smart motion in velocity mode to control speed
-        clawPidController.setP(0.0005);
-        clawPidController.setSmartMotionMaxVelocity(5000, 0);
-        clawPidController.setSmartMotionMaxAccel(5000, 0);
-        claw.setSmartCurrentLimit(10, 30);
 
         if (tunePidMode)
             PutTuneValuesToSmartDashboard();
     }
 
-    private void SetPidGainsForWormAndExtend() {
+    private void SetPidGainsForWormExtendClaw() {
         wormPidControl.setP(worm_kP);
         wormPidControl.setD(worm_kD);
         wormPidControl.setI(worm_kI);
@@ -84,6 +85,17 @@ public class ArmSubsystem extends SubsystemBase {
         extendPidControl.setFF(extend_kFF);
         extendPidControl.setSmartMotionMaxVelocity(extendMaxVel, 0);
         extendPidControl.setSmartMotionMaxAccel(extendMaxAcc, 0);
+
+        //The claw motor uses smart motion in velocity mode to control speed
+        clawPidController.setP(claw_kP);
+        clawPidController.setD(0);
+        clawPidController.setI(0);
+        clawPidController.setFF(0);
+        clawPidController.setIZone(0);
+        clawPidController.setOutputRange(-1, 1);
+        clawPidController.setSmartMotionMaxVelocity(clawMaxVel, 0);
+        clawPidController.setSmartMotionMaxAccel(clawMaxAcc, 0);
+     //   claw.setSmartCurrentLimit(10, 30);
     }
 
     /**
@@ -91,7 +103,7 @@ public class ArmSubsystem extends SubsystemBase {
      * @param speed
      */
     public void zoop(double speed) {
-        clawPidController.setReference(speed  * ArmConstants.ClawMaxPercent, ControlType.kVelocity);
+        clawPidController.setReference(speed, ControlType.kSmartVelocity);  //* ArmConstants.ClawMaxPercent, ControlType.kVelocity);
     }
 
 
@@ -107,6 +119,7 @@ public class ArmSubsystem extends SubsystemBase {
         if (tunePidMode)
         {
             ReadTuningRefsAndGainsFromSmartDashboard();
+            zoop(clawSpeedRef);
         }
         //The teleop and autonomus commands set up the references
         // send the ref to the PID controllers.
@@ -114,89 +127,6 @@ public class ArmSubsystem extends SubsystemBase {
         sendExtendPosToPidController();
         sendWormRefToPidController();
     }
-
-    private void PutTuneValuesToSmartDashboard()
-    {
-        SmartDashboard.putNumber("wormKP", worm_kP);
-        SmartDashboard.putNumber("wormKI", worm_kI);
-        SmartDashboard.putNumber("wormFF", worm_kFF);
-        SmartDashboard.putNumber("wormMaxVel", wormMaxVel);
-        SmartDashboard.putNumber("wormMaxAcc", wormMaxAcc);
-        SmartDashboard.putNumber("extendKP", extend_kP);
-        SmartDashboard.putNumber("extendKI", extend_kI);
-        SmartDashboard.putNumber("extendFF", extend_kFF);
-        SmartDashboard.putNumber("extendMaxVel", extendMaxVel);
-        SmartDashboard.putNumber("extendMaxAcc", extendMaxAcc);
-        SmartDashboard.putNumber("WormTunePosRef", wormPosRef);
-        SmartDashboard.putNumber("ExtendTunePosRef", extendPosRef);
-    }
-    private void ReadTuningRefsAndGainsFromSmartDashboard() {
-        double wormkP = SmartDashboard.getNumber("wormKP", worm_kP);
-        double wormkI = SmartDashboard.getNumber("wormKI", worm_kI);
-        double wormkFF = SmartDashboard.getNumber("wormFF", worm_kFF);
-        double wormMVel = SmartDashboard.getNumber("wormMaxVel", wormMaxVel);
-        double wormMAcc = SmartDashboard.getNumber("wormMaxAcc", wormMaxAcc);
-        double extendkP = SmartDashboard.getNumber("extendKP", extend_kP);
-        double extendkI = SmartDashboard.getNumber("extendKI", extend_kI);
-        double extendkFF = SmartDashboard.getNumber("extendFF", extend_kFF);
-        double extendMVel = SmartDashboard.getNumber("extendMaxVel", extendMaxVel);
-        double extendMAcc = SmartDashboard.getNumber("extendMaxAcc", extendMaxAcc);
-
-        SmartDashboard.putNumber("Worm IA", worm.getOutputCurrent());
-        SmartDashboard.putNumber("Worm Spd", wormEncoder.getVelocity());
-        SmartDashboard.putNumber("Extend IA", extend.getOutputCurrent());
-        SmartDashboard.putNumber("Extend Spd", extendEncoder.getVelocity());
-
-        //values in motor turns
-        wormPosRef = SmartDashboard.getNumber("WormTunePosRef", wormPosRef);
-        extendPosRef = SmartDashboard.getNumber("ExtendTunePosRef", extendPosRef);
-
-        //set the values if they are different
-        Boolean diff = false;
-        if (wormkP != worm_kP){
-            worm_kP = wormkP;
-            diff = true;
-        }
-        if (wormkI != worm_kI){
-            worm_kI = wormkI;
-            diff = true;
-        }
-        if (wormkFF != worm_kFF){
-            worm_kFF = wormkFF;
-            diff = true;
-        }
-        if (wormMVel != wormMaxVel){
-            wormMaxVel = wormMVel;
-            diff = true;
-        }
-        if (wormMAcc != wormMaxAcc){
-            wormMaxAcc = wormMAcc;
-            diff = true;
-        }
-        if (extendkP != extend_kP){
-            extend_kP = extendkP;
-            diff = true;
-        }
-        if (extendkI != extend_kI){
-            extend_kI = extendkI;
-            diff = true;
-        }
-        if (extendkFF != extend_kFF){
-            extend_kFF = extendkFF;
-            diff = true;
-        }
-        if (extendMVel != extendMaxVel){
-            extendMaxVel = extendMVel;
-            diff = true;
-        }
-        if (extendMAcc != extendMaxAcc){
-            extendMaxAcc = extendMAcc;
-            diff = true;
-        }
-        if (diff)
-            SetPidGainsForWormAndExtend();
-    }
-
      /**
      * -1 = Jog worm reverse, 1 = forward
      * 0 = freeze the worm the first time after a forward or reverse
@@ -277,5 +207,112 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public void tuckInExtendPos() {
         extendPosRef = ArmConstants.ExtendPositionFloorCone * ArmConstants.ExtendMotorRotationsPerInch;
+    }
+
+    //tuning stuff below
+    private void PutTuneValuesToSmartDashboard()
+    {
+        SmartDashboard.putNumber("wormKP", worm_kP);
+        SmartDashboard.putNumber("wormKI", worm_kI);
+        SmartDashboard.putNumber("wormFF", worm_kFF);
+        SmartDashboard.putNumber("wormMaxVel", wormMaxVel);
+        SmartDashboard.putNumber("wormMaxAcc", wormMaxAcc);
+        SmartDashboard.putNumber("extendKP", extend_kP);
+        SmartDashboard.putNumber("extendKI", extend_kI);
+        SmartDashboard.putNumber("extendFF", extend_kFF);
+        SmartDashboard.putNumber("extendMaxVel", extendMaxVel);
+        SmartDashboard.putNumber("extendMaxAcc", extendMaxAcc);
+        SmartDashboard.putNumber("WormTunePosRef", wormPosRef);
+        SmartDashboard.putNumber("ExtendTunePosRef", extendPosRef);
+        SmartDashboard.putNumber("clawKP", claw_kP);
+        SmartDashboard.putNumber("clawMaxVel", clawMaxVel);
+        SmartDashboard.putNumber("clawMaxAcc", clawMaxAcc);
+        SmartDashboard.putNumber("clawSpdRef", clawSpeedRef);
+    }
+    private void ReadTuningRefsAndGainsFromSmartDashboard() {
+        double wormkP = SmartDashboard.getNumber("wormKP", worm_kP);
+        double wormkI = SmartDashboard.getNumber("wormKI", worm_kI);
+        double wormkFF = SmartDashboard.getNumber("wormFF", worm_kFF);
+        double wormMVel = SmartDashboard.getNumber("wormMaxVel", wormMaxVel);
+        double wormMAcc = SmartDashboard.getNumber("wormMaxAcc", wormMaxAcc);
+        double extendkP = SmartDashboard.getNumber("extendKP", extend_kP);
+        double extendkI = SmartDashboard.getNumber("extendKI", extend_kI);
+        double extendkFF = SmartDashboard.getNumber("extendFF", extend_kFF);
+        double extendMVel = SmartDashboard.getNumber("extendMaxVel", extendMaxVel);
+        double extendMAcc = SmartDashboard.getNumber("extendMaxAcc", extendMaxAcc);
+        double clawkP = SmartDashboard.getNumber("clawKP", claw_kP);
+        double clawMVel = SmartDashboard.getNumber("clawMaxVel", clawMaxVel);
+        double clawMAcc = SmartDashboard.getNumber("clawMaxAcc", clawMaxAcc);
+
+
+        SmartDashboard.putNumber("Worm IA", worm.getOutputCurrent());
+        SmartDashboard.putNumber("Worm Spd", wormEncoder.getVelocity());
+        SmartDashboard.putNumber("Extend IA", extend.getOutputCurrent());
+        SmartDashboard.putNumber("Extend Spd", extendEncoder.getVelocity());
+        SmartDashboard.putNumber("Claw IA", claw.getOutputCurrent());
+        SmartDashboard.putNumber("Claw Spd", clawEncoder.getVelocity());
+
+        //values in motor turns
+        wormPosRef = SmartDashboard.getNumber("WormTunePosRef", wormPosRef);
+        extendPosRef = SmartDashboard.getNumber("ExtendTunePosRef", extendPosRef);
+        clawSpeedRef = SmartDashboard.getNumber("clawSpdRef", clawSpeedRef);
+
+        //set the values if they are different
+        Boolean diff = false;
+        if (wormkP != worm_kP){
+            worm_kP = wormkP;
+            diff = true;
+        }
+        if (wormkI != worm_kI){
+            worm_kI = wormkI;
+            diff = true;
+        }
+        if (wormkFF != worm_kFF){
+            worm_kFF = wormkFF;
+            diff = true;
+        }
+        if (wormMVel != wormMaxVel){
+            wormMaxVel = wormMVel;
+            diff = true;
+        }
+        if (wormMAcc != wormMaxAcc){
+            wormMaxAcc = wormMAcc;
+            diff = true;
+        }
+        if (extendkP != extend_kP){
+            extend_kP = extendkP;
+            diff = true;
+        }
+        if (extendkI != extend_kI){
+            extend_kI = extendkI;
+            diff = true;
+        }
+        if (extendkFF != extend_kFF){
+            extend_kFF = extendkFF;
+            diff = true;
+        }
+        if (extendMVel != extendMaxVel){
+            extendMaxVel = extendMVel;
+            diff = true;
+        }
+        if (extendMAcc != extendMaxAcc){
+            extendMaxAcc = extendMAcc;
+            diff = true;
+        }
+        if (clawkP != claw_kP){
+            claw_kP = clawkP;
+            diff = true;
+        }
+        if (clawMVel != clawMaxVel){
+            clawMaxVel = clawMVel;
+            diff = true;
+        }
+        if (clawMAcc != clawMaxAcc){
+            clawMaxAcc = clawMAcc;
+            diff = true;
+        }
+
+        if (diff)
+            SetPidGainsForWormExtendClaw();
     }
 }

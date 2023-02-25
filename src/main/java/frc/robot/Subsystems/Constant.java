@@ -42,14 +42,17 @@ public class Constant {
         public static final int PigeonID = 49;
     }
     public static final class ArmConstants{
-        public static final int ClawMotor = 15;
+        public static final int ClawMotor = 12;
         public static final int WormMotor = 17;
         public static final double ClawMaxPercent = 0.25;
-        public static final double WormMotorRotationsPerInch = 20;//gear ratio is 4 and the worm gear has 5 turns per inch
-        public static final double WormPositionMax = 20;//inches of rod
-        public static final double WormPositionFrontCone = 19;
+        //gear ratio is 4 and the worm gear motion isn't linear. one turn at the bottom has more arm angle
+        //than a turn at the top. The desired max position determined imperically was 110 motor rotations
+        // so we made this ration 7.33, 
+        public static final double WormMotorRotationsPerInch = 7.33;
+        public static final double WormPositionMax = 15;//inches of rod
+        public static final double WormPositionFrontCone = 14;
         public static final double WormPositionMin = 0;//inches of rod
-        public static final double WormPositionOutsideRobot = 6; //inches of rod
+        public static final double WormPositionOutsideRobot = 5; //inches of rod
         public static final double ExtendMotorRotationsPerInch = 3.8197;//Spool size is 1" circumfrence is pi, therefore 1/pi spool rotations = 1 inch. Gear box is 12:1.
         public static final int ExtendMotor = 13;
         public static final double ExtendPositionMax = 20; //inches
