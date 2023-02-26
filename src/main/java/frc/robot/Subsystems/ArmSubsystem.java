@@ -49,6 +49,8 @@ public class ArmSubsystem extends SubsystemBase {
     double extendMaxAcc = 1500; //rpm/sec
 
     double claw_kP = 0.0001;
+    double claw_kI = 0.0000001;
+    double claw_kFF = 0.000015;
     double clawMaxVel = 5000; //rpm
     double clawMaxAcc = 5000; //rpm/sec
     double clawSpeedRef = 0;
@@ -68,7 +70,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 
         if (tunePidMode)
-            PutTuneValuesToSmartDashboard();
+            PutTuneValuesToSmartDashboard(false, false, true);
     }
 
     private void SetPidGainsForWormExtendClaw() {
@@ -86,15 +88,15 @@ public class ArmSubsystem extends SubsystemBase {
         extendPidControl.setSmartMotionMaxVelocity(extendMaxVel, 0);
         extendPidControl.setSmartMotionMaxAccel(extendMaxAcc, 0);
 
-        //The claw motor uses smart motion in velocity mode to control speed
+        //The claw motor uses velocity mode to control speed
         clawPidController.setP(claw_kP);
         clawPidController.setD(0);
-        clawPidController.setI(0);
-        clawPidController.setFF(0);
+        clawPidController.setI(claw_kI);
+        clawPidController.setFF(claw_kFF);
         clawPidController.setIZone(0);
         clawPidController.setOutputRange(-1, 1);
-        clawPidController.setSmartMotionMaxVelocity(clawMaxVel, 0);
-        clawPidController.setSmartMotionMaxAccel(clawMaxAcc, 0);
+ //       clawPidController.setSmartMotionMaxVelocity(clawMaxVel, 0);
+ //       clawPidController.setSmartMotionMaxAccel(clawMaxAcc, 0);
      //   claw.setSmartCurrentLimit(10, 30);
     }
 
@@ -103,7 +105,7 @@ public class ArmSubsystem extends SubsystemBase {
      * @param speed
      */
     public void zoop(double speed) {
-        clawPidController.setReference(speed, ControlType.kSmartVelocity);  //* ArmConstants.ClawMaxPercent, ControlType.kVelocity);
+        clawPidController.setReference(speed, ControlType.kVelocity);  //* ArmConstants.ClawMaxPercent, ControlType.kVelocity);
     }
 
 
@@ -210,24 +212,32 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     //tuning stuff below
-    private void PutTuneValuesToSmartDashboard()
+    private void PutTuneValuesToSmartDashboard(Boolean includeWorm, Boolean includeExtend, Boolean includeClaw)
     {
-        SmartDashboard.putNumber("wormKP", worm_kP);
-        SmartDashboard.putNumber("wormKI", worm_kI);
-        SmartDashboard.putNumber("wormFF", worm_kFF);
-        SmartDashboard.putNumber("wormMaxVel", wormMaxVel);
-        SmartDashboard.putNumber("wormMaxAcc", wormMaxAcc);
-        SmartDashboard.putNumber("extendKP", extend_kP);
-        SmartDashboard.putNumber("extendKI", extend_kI);
-        SmartDashboard.putNumber("extendFF", extend_kFF);
-        SmartDashboard.putNumber("extendMaxVel", extendMaxVel);
-        SmartDashboard.putNumber("extendMaxAcc", extendMaxAcc);
-        SmartDashboard.putNumber("WormTunePosRef", wormPosRef);
-        SmartDashboard.putNumber("ExtendTunePosRef", extendPosRef);
-        SmartDashboard.putNumber("clawKP", claw_kP);
-        SmartDashboard.putNumber("clawMaxVel", clawMaxVel);
-        SmartDashboard.putNumber("clawMaxAcc", clawMaxAcc);
-        SmartDashboard.putNumber("clawSpdRef", clawSpeedRef);
+        if (includeWorm){
+            SmartDashboard.putNumber("wormKP", worm_kP);
+            SmartDashboard.putNumber("wormKI", worm_kI);
+            SmartDashboard.putNumber("wormFF", worm_kFF);
+            SmartDashboard.putNumber("wormMaxVel", wormMaxVel);
+            SmartDashboard.putNumber("wormMaxAcc", wormMaxAcc);
+            SmartDashboard.putNumber("WormTunePosRef", wormPosRef);
+        }
+        if (includeExtend){
+            SmartDashboard.putNumber("extendKP", extend_kP);
+            SmartDashboard.putNumber("extendKI", extend_kI);
+            SmartDashboard.putNumber("extendFF", extend_kFF);
+            SmartDashboard.putNumber("extendMaxVel", extendMaxVel);
+            SmartDashboard.putNumber("extendMaxAcc", extendMaxAcc);
+            SmartDashboard.putNumber("ExtendTunePosRef", extendPosRef);
+        }
+        if (includeClaw){
+            SmartDashboard.putNumber("clawKP", claw_kP);
+            SmartDashboard.putNumber("clawKI", claw_kI);
+            SmartDashboard.putNumber("clawFF", claw_kFF);
+            SmartDashboard.putNumber("clawMaxVel", clawMaxVel);
+            SmartDashboard.putNumber("clawMaxAcc", clawMaxAcc);
+            SmartDashboard.putNumber("clawSpdRef", clawSpeedRef);
+            }
     }
     private void ReadTuningRefsAndGainsFromSmartDashboard() {
         double wormkP = SmartDashboard.getNumber("wormKP", worm_kP);
@@ -241,6 +251,8 @@ public class ArmSubsystem extends SubsystemBase {
         double extendMVel = SmartDashboard.getNumber("extendMaxVel", extendMaxVel);
         double extendMAcc = SmartDashboard.getNumber("extendMaxAcc", extendMaxAcc);
         double clawkP = SmartDashboard.getNumber("clawKP", claw_kP);
+        double clawkI = SmartDashboard.getNumber("clawKI", claw_kI);
+        double clawkFF = SmartDashboard.getNumber("clawFF", claw_kFF);
         double clawMVel = SmartDashboard.getNumber("clawMaxVel", clawMaxVel);
         double clawMAcc = SmartDashboard.getNumber("clawMaxAcc", clawMaxAcc);
 
@@ -301,6 +313,14 @@ public class ArmSubsystem extends SubsystemBase {
         }
         if (clawkP != claw_kP){
             claw_kP = clawkP;
+            diff = true;
+        }
+        if (clawkI != claw_kI) {
+            claw_kI = clawkI;
+            diff = true;
+        }
+        if (clawkFF != claw_kFF) {
+            claw_kFF = clawkFF;
             diff = true;
         }
         if (clawMVel != clawMaxVel){
