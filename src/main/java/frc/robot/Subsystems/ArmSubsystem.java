@@ -31,7 +31,7 @@ public class ArmSubsystem extends SubsystemBase {
     double extendFixedArmInEncoderCounts = 34 * ArmConstants.ExtendMotorRotationsPerInch;
     double extendMotorCountsFor42InchHeight = 42 * ArmConstants.ExtendMotorRotationsPerInch;
 
-    Boolean tunePidMode = true;//set to true to have position refs and gains set from smart dashboard.
+    Boolean tunePidMode = false;//set to true to have position refs and gains set from smart dashboard.
     //The reference to the PID is in motor rotations, but all the gains and feed forward are normalized
     // to 1 = max, -1 = min
     double worm_kP = 0.00018;
@@ -48,12 +48,14 @@ public class ArmSubsystem extends SubsystemBase {
     double extendMaxVel = 2300; // rpm  
     double extendMaxAcc = 1500; //rpm/sec
 
-    double claw_kP = 0.0001;
-    double claw_kI = 0.0000001;
-    double claw_kFF = 0.000015;
-    double clawMaxVel = 5000; //rpm
-    double clawMaxAcc = 5000; //rpm/sec
+    double claw_kP = 0.0004;
+    double claw_kI = 0.000000;
+    double claw_kFF = 0.000000;
+    double clawMaxVel = 2000; //rpm
+    double clawMaxAcc = 1000; //rpm/sec
     double clawSpeedRef = 0;
+    double clawSpdRefTune = 0;
+    int claw_StallCurLimitAmps = 65;
 
 
     
@@ -63,7 +65,7 @@ public class ArmSubsystem extends SubsystemBase {
         extend.restoreFactoryDefaults();
         extend.setIdleMode(IdleMode.kBrake);
         worm.setIdleMode(IdleMode.kBrake);
-        claw.setIdleMode(IdleMode.kBrake);
+        claw.setIdleMode(IdleMode.kCoast);
         worm.setInverted(true);
 
         SetPidGainsForWormExtendClaw();
@@ -97,7 +99,7 @@ public class ArmSubsystem extends SubsystemBase {
         clawPidController.setOutputRange(-1, 1);
  //       clawPidController.setSmartMotionMaxVelocity(clawMaxVel, 0);
  //       clawPidController.setSmartMotionMaxAccel(clawMaxAcc, 0);
-     //   claw.setSmartCurrentLimit(10, 30);
+        claw.setSmartCurrentLimit(claw_StallCurLimitAmps, 50);
     }
 
     /**
@@ -105,7 +107,8 @@ public class ArmSubsystem extends SubsystemBase {
      * @param speed
      */
     public void zoop(double speed) {
-        clawPidController.setReference(speed, ControlType.kVelocity);  //* ArmConstants.ClawMaxPercent, ControlType.kVelocity);
+        if (!tunePidMode)
+            clawPidController.setReference(speed, ControlType.kVelocity);  //* ArmConstants.ClawMaxPercent, ControlType.kVelocity);
     }
 
 
@@ -121,7 +124,9 @@ public class ArmSubsystem extends SubsystemBase {
         if (tunePidMode)
         {
             ReadTuningRefsAndGainsFromSmartDashboard();
-            zoop(clawSpeedRef);
+            clawSpeedRef = clawSpdRefTune;
+            //claw.set(clawSpdRefTune/6000);
+            clawPidController.setReference(clawSpdRefTune, ControlType.kVelocity);  //* ArmConstants.ClawMaxPercent, ControlType.kVelocity);
         }
         //The teleop and autonomus commands set up the references
         // send the ref to the PID controllers.
@@ -267,7 +272,7 @@ public class ArmSubsystem extends SubsystemBase {
         //values in motor turns
         wormPosRef = SmartDashboard.getNumber("WormTunePosRef", wormPosRef);
         extendPosRef = SmartDashboard.getNumber("ExtendTunePosRef", extendPosRef);
-        clawSpeedRef = SmartDashboard.getNumber("clawSpdRef", clawSpeedRef);
+        clawSpdRefTune = SmartDashboard.getNumber("clawSpdRef", clawSpeedRef);
 
         //set the values if they are different
         Boolean diff = false;
