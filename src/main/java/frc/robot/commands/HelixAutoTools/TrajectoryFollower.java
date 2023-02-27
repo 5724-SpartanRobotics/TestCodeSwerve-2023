@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.commands.HelixAutoTools.PIDController;
 import frc.robot.commands.HelixAutoTools.SwerveTrajectory;
@@ -59,6 +60,10 @@ public class TrajectoryFollower extends CommandBase {
     double vy = yController.calculate(currentPose.getY(), dt)-refState.velocity.y;
     double omega = -thetaController.calculate(currentPose.getRotation().getRadians(), dt) - refState.velocity.z;
 
+    SmartDashboard.putNumber("AutoTime", dt);
+    SmartDashboard.putNumber("vxauto", vx);
+    SmartDashboard.putNumber("vyauto", vy);
+    SmartDashboard.putNumber("omegaauto", omega);
 
     drive.drive(new Translation2d(vx, vy), omega);
     lastTime = time;
