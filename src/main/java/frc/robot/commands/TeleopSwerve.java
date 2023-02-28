@@ -37,6 +37,11 @@ public class TeleopSwerve extends CommandBase {
     public void execute(){
         double xAxis;
         double yAxis;
+        double speedMod = 1;
+        if(controller.getRawButton(1)){
+            speedMod = 0.5;
+        }
+        System.out.println(speedMod);
         // This chunk of code locks certain joystick directions if buttons are pressed
         if(controller.getRawButton(5)) {
             yAxis = 0;
@@ -48,6 +53,7 @@ public class TeleopSwerve extends CommandBase {
             xAxis = 0;
         } else {
             xAxis = -controller.getY();
+            
         }
         double zAxis = -controller.getZ() / 2;
 
@@ -61,9 +67,9 @@ public class TeleopSwerve extends CommandBase {
 
         
         
-        yAxis = (Math.abs(yAxis) < ControllerConstants.joystickDeadband) ? 0 : yAxis;
-        xAxis = (Math.abs(xAxis) < ControllerConstants.joystickDeadband) ? 0 : xAxis;
-        zAxis = (Math.abs(zAxis) < ControllerConstants.joystickDeadband) ? 0 : zAxis;
+        yAxis = (Math.abs(yAxis) < ControllerConstants.joystickDeadband) ? 0 : yAxis * speedMod;
+        xAxis = (Math.abs(xAxis) < ControllerConstants.joystickDeadband) ? 0 : xAxis * speedMod;
+        zAxis = (Math.abs(zAxis) < ControllerConstants.joystickDeadband) ? 0 : zAxis * speedMod;
 
         double rotation = zAxis * DriveConstants.maxAngularVelocityRps;
         Translation2d translation = new Translation2d(yAxis, xAxis).times(DriveConstants.maxRobotSpeedmps);

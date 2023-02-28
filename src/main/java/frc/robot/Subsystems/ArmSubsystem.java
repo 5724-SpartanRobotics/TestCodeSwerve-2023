@@ -107,7 +107,7 @@ public class ArmSubsystem extends SubsystemBase {
      * @param speed
      */
     public void zoop(double speed) {
-        System.out.println(speed);
+        // System.out.println(speed);
         if (!tunePidMode)
             clawPidController.setReference(speed, ControlType.kVelocity);  //* ArmConstants.ClawMaxPercent, ControlType.kVelocity);
     }
