@@ -8,7 +8,7 @@ import frc.robot.commands.HelixAutoTools.Paths.Path;
 
 public class TestAutoFull extends SequentialCommandGroup {
     public TestAutoFull(DriveTrainSubsystemRick drive, TrajectoriesManager trajectoriesManager) {
-        Path testAuto = trajectoriesManager.loadTrajectory("StraightLineTraj");
+        Path testAuto = trajectoriesManager.loadTrajectory("CircleTest");
         addCommands(
             new TrajectoryFollower(drive, testAuto)
         );

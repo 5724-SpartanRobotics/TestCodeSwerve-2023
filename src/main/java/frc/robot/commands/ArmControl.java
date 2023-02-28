@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems.ArmSubsystem;
+import frc.robot.Subsystems.Constant.ArmConstants;
 
 public class ArmControl extends CommandBase {
     private XboxController controller;
@@ -60,6 +61,6 @@ public class ArmControl extends CommandBase {
             arm.driveRotation(0);
         }
         //set the claw motor speed
-        arm.zoop(controller.getLeftTriggerAxis() - controller.getRightTriggerAxis());
+        arm.zoop((controller.getRightTriggerAxis() - controller.getLeftTriggerAxis()) * ArmConstants.ClawMaxPercent * 6000);
     }
 }

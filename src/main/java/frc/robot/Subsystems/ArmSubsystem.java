@@ -107,6 +107,7 @@ public class ArmSubsystem extends SubsystemBase {
      * @param speed
      */
     public void zoop(double speed) {
+        System.out.println(speed);
         if (!tunePidMode)
             clawPidController.setReference(speed, ControlType.kVelocity);  //* ArmConstants.ClawMaxPercent, ControlType.kVelocity);
     }
@@ -177,7 +178,7 @@ public class ArmSubsystem extends SubsystemBase {
             extendPosRef = ArmConstants.ExtendPositionMin * ArmConstants.ExtendMotorRotationsPerInch;
             extendFreezeSet = false;
         }
-        else if (!wormFreezeSet)//hold the last position
+        else if (!extendFreezeSet)//hold the last position
         {
             extendPosRef = extendEncoder.getPosition();
             extendFreezeSet = true;
