@@ -62,5 +62,12 @@ public class ArmControl extends CommandBase {
         }
         //set the claw motor speed
         arm.zoop((controller.getRightTriggerAxis() - controller.getLeftTriggerAxis()) * ArmConstants.ClawMaxPercent * 6000);
+
+        if (controller.getStartButtonPressed()) {
+            arm.useConeCurrentLimit();
+        }
+        else if (controller.getBackButtonPressed()) {
+            arm.useCubeCurrentLimit();
+        }
     }
 }

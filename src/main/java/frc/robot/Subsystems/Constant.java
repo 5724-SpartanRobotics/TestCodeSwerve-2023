@@ -45,6 +45,9 @@ public class Constant {
         public static final int ClawMotor = 12;
         public static final int WormMotor = 17;
         public static final double ClawMaxPercent = 0.25;
+        public static final int claw_ConeStallCurLimitAmps = 65;
+        public static final int claw_CubeStallCurLimitAmps = 50;
+
         //gear ratio is 4 and the worm gear motion isn't linear. one turn at the bottom has more arm angle
         //than a turn at the top. The desired max position determined imperically was 110 motor rotations
         // so we made this ration 7.33, 

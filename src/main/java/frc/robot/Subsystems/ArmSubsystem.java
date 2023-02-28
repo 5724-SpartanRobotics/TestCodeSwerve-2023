@@ -55,7 +55,7 @@ public class ArmSubsystem extends SubsystemBase {
     double clawMaxAcc = 1000; //rpm/sec
     double clawSpeedRef = 0;
     double clawSpdRefTune = 0;
-    int claw_StallCurLimitAmps = 65;
+    int claw_StallCurLimitAmps = ArmConstants.claw_ConeStallCurLimitAmps;
 
 
     
@@ -67,6 +67,8 @@ public class ArmSubsystem extends SubsystemBase {
         worm.setIdleMode(IdleMode.kBrake);
         claw.setIdleMode(IdleMode.kCoast);
         worm.setInverted(true);
+
+        SmartDashboard.putBoolean("ClawCubeForce", claw_StallCurLimitAmps == ArmConstants.claw_ConeStallCurLimitAmps);
 
         SetPidGainsForWormExtendClaw();
 
@@ -112,6 +114,15 @@ public class ArmSubsystem extends SubsystemBase {
             clawPidController.setReference(speed, ControlType.kVelocity);  //* ArmConstants.ClawMaxPercent, ControlType.kVelocity);
     }
 
+    public void useConeCurrentLimit(){
+        claw_StallCurLimitAmps = ArmConstants.claw_ConeStallCurLimitAmps;
+        SmartDashboard.putBoolean("ClawCubeForce", claw_StallCurLimitAmps == ArmConstants.claw_ConeStallCurLimitAmps);
+    }
+
+    public void useCubeCurrentLimit(){
+        claw_StallCurLimitAmps = ArmConstants.claw_CubeStallCurLimitAmps;
+        SmartDashboard.putBoolean("ClawCubeForce", claw_StallCurLimitAmps == ArmConstants.claw_ConeStallCurLimitAmps);
+    }
 
     @Override
     public void periodic() {
