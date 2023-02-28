@@ -72,6 +72,7 @@ public class ArmSubsystem extends SubsystemBase {
 
         SetPidGainsForWormExtendClaw();
 
+        claw.setSmartCurrentLimit(claw_StallCurLimitAmps, 50);
 
         if (tunePidMode)
             PutTuneValuesToSmartDashboard(false, false, true);
@@ -101,7 +102,6 @@ public class ArmSubsystem extends SubsystemBase {
         clawPidController.setOutputRange(-1, 1);
  //       clawPidController.setSmartMotionMaxVelocity(clawMaxVel, 0);
  //       clawPidController.setSmartMotionMaxAccel(clawMaxAcc, 0);
-        claw.setSmartCurrentLimit(claw_StallCurLimitAmps, 50);
     }
 
     /**
@@ -116,11 +116,13 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void useConeCurrentLimit(){
         claw_StallCurLimitAmps = ArmConstants.claw_ConeStallCurLimitAmps;
+        claw.setSmartCurrentLimit(claw_StallCurLimitAmps, 50);
         SmartDashboard.putBoolean("ClawCubeForce", claw_StallCurLimitAmps == ArmConstants.claw_ConeStallCurLimitAmps);
     }
 
     public void useCubeCurrentLimit(){
         claw_StallCurLimitAmps = ArmConstants.claw_CubeStallCurLimitAmps;
+        claw.setSmartCurrentLimit(claw_StallCurLimitAmps, 50);
         SmartDashboard.putBoolean("ClawCubeForce", claw_StallCurLimitAmps == ArmConstants.claw_ConeStallCurLimitAmps);
     }
 
