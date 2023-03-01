@@ -68,6 +68,12 @@ public class ArmSubsystem extends SubsystemBase {
         claw.setIdleMode(IdleMode.kCoast);
         worm.setInverted(true);
 
+        //set the extend and worm freeze booleans so that drift after powerup and before teleop do not cause the current position to be the reference.
+        // In other words keep the zero reference.
+        // The FreezeSet bits are used to freeze the position reference to match the current feedback when a jog request is removed.
+        extendFreezeSet = true;
+        wormFreezeSet = true;
+
         SmartDashboard.putBoolean("ClawCubeForce", claw_StallCurLimitAmps == ArmConstants.claw_ConeStallCurLimitAmps);
 
         SetPidGainsForWormExtendClaw();
