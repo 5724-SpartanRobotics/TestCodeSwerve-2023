@@ -39,8 +39,7 @@ public class ArmControl extends CommandBase {
             // extend at floor height of cone
             arm.cubeFloorPos();
         } else if (controller.getAButton()) {
-            // Tuck in extend posn (which is hopefully also floor cone pickup height)
-            arm.tuckInExtendPos();
+            arm.coneFloorPos();
         } else {
             //stop jog
             arm.driveExtension(0);

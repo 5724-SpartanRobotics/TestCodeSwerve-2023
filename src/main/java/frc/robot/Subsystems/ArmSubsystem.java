@@ -232,7 +232,7 @@ public class ArmSubsystem extends SubsystemBase {
     /**
      * Set the arm inside the robot with the claw at cone pickup height.
      */
-    public void tuckInExtendPos() {
+    public void coneFloorPos() {
         extendPosRef = ArmConstants.ExtendPositionFloorCone * ArmConstants.ExtendMotorRotationsPerInch;
     }
 
