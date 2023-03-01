@@ -39,9 +39,8 @@ public class TeleopSwerve extends CommandBase {
         double yAxis;
         double speedMod = 1;
         if(controller.getRawButton(1)){
-            speedMod = 0.5;
+            speedMod = 0.25;
         }
-        System.out.println(speedMod);
         // This chunk of code locks certain joystick directions if buttons are pressed
         if(controller.getRawButton(5)) {
             yAxis = 0;

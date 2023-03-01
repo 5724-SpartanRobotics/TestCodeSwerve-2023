@@ -48,7 +48,7 @@ public class ArmSubsystem extends SubsystemBase {
     double extendMaxVel = 2300; // rpm  
     double extendMaxAcc = 1500; //rpm/sec
 
-    double claw_kP = 0.0004;
+    double claw_kP = 0.0003;
     double claw_kI = 0.000000;
     double claw_kFF = 0.000000;
     double clawMaxVel = 2000; //rpm

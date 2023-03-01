@@ -52,7 +52,7 @@ public class Constant {
         //than a turn at the top. The desired max position determined imperically was 110 motor rotations
         // so we made this ration 7.33, 
         public static final double WormMotorRotationsPerInch = 7.33;
-        public static final double WormPositionMax = 15;//inches of rod
+        public static final double WormPositionMax = 16;//inches of rod
         public static final double WormPositionFrontCone = 14;
         public static final double WormPositionMin = 0;//inches of rod
         public static final double WormPositionOutsideRobot = 5; //inches of rod

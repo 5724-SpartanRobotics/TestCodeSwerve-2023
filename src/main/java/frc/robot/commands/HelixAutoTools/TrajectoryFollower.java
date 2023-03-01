@@ -56,8 +56,8 @@ public class TrajectoryFollower extends CommandBase {
     // double vy = yController.calculate(-currentPose.getY(), dt) - refState.velocity.y;
     // double omega = -thetaController.calculate(-currentPose.getRotation().getRadians(), dt) + refState.velocity.z;
 
-    double vx = xController.calculate(currentPose.getX(), dt)-refState.velocity.x;
-    double vy = yController.calculate(currentPose.getY(), dt)-refState.velocity.y;
+    double vx = xController.calculate(currentPose.getY(), dt)-refState.velocity.x;
+    double vy = yController.calculate(currentPose.getX(), dt)-refState.velocity.y;
     double omega = -thetaController.calculate(currentPose.getRotation().getRadians(), dt) - refState.velocity.z;
 
     SmartDashboard.putNumber("AutoTime", dt);
@@ -65,7 +65,8 @@ public class TrajectoryFollower extends CommandBase {
     SmartDashboard.putNumber("vyauto", vy);
     SmartDashboard.putNumber("omegaauto", omega);
 
-    drive.drive(new Translation2d(vx, vy), omega);
+    // Very dumb fix, should be x,y
+    drive.drive(new Translation2d(vy, vx), omega);
     lastTime = time;
   }
 
