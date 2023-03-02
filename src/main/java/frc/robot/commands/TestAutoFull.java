@@ -11,17 +11,17 @@ import frc.robot.commands.HelixAutoTools.TrajectoryFollower;
 import frc.robot.commands.HelixAutoTools.Paths.Path;
 
 public class TestAutoFull extends SequentialCommandGroup {
-    public TestAutoFull(DriveTrainSubsystemRick drive, TrajectoriesManager trajectoriesManager) {
-        // addRequirements(drive, arm);
+    public TestAutoFull(DriveTrainSubsystemRick drive, ArmSubsystem arm, TrajectoriesManager trajectoriesManager) {
+        addRequirements(drive, arm);
         Path pt1 = trajectoriesManager.loadTrajectory("Basic0");
         Path pt2 = trajectoriesManager.loadTrajectory("Basic1");
-        // addCommands(
-        //     new SequentialCommandGroup(
-        //         new RunCommand(() -> {
-        //             arm.humanPlayerCone();
-        //         }, arm),
-        //         new WaitCommand(3)
-        //     )
-        // );
+        addCommands(
+            new SequentialCommandGroup(
+                new RunCommand(() -> {
+                    arm.humanPlayerCone();
+                }, arm),
+                new WaitCommand(3)
+            )
+        );
     }
 }
