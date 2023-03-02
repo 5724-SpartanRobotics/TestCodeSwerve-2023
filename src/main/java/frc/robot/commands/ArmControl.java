@@ -55,6 +55,10 @@ public class ArmControl extends CommandBase {
         } else if (controller.getYButton()) {
             //Set hoist position to front pole height
             arm.frontHoistPos();
+        } else if (controller.getPOV() == 90) {
+            arm.humanPlayerCone();
+        } else if (controller.getPOV() == 270) {
+            arm.humanPlayerCube();
         } else {
             //stop jog. 
             arm.driveRotation(0);

@@ -38,8 +38,8 @@ public class ArmSubsystem extends SubsystemBase {
     double worm_kI = 0.000000007;
     double worm_kD = 0.0;
     double worm_kFF = 0.00;
-    double wormMaxVel = 2500; // rpm  
-    double wormMaxAcc = 1800; //rpm/sec
+    double wormMaxVel = 2800; // rpm  
+    double wormMaxAcc = 2000; //rpm/sec
 
     double extend_kP = 0.0002;
     double extend_kI = 0.00000007;
@@ -234,6 +234,14 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public void coneFloorPos() {
         extendPosRef = ArmConstants.ExtendPositionFloorCone * ArmConstants.ExtendMotorRotationsPerInch;
+    }
+
+    public void humanPlayerCone() {
+        wormPosRef = ArmConstants.WormPositionHPCone * ArmConstants.WormMotorRotationsPerInch;
+    }
+
+    public void humanPlayerCube() {
+        wormPosRef = ArmConstants.WormPositionHPCube * ArmConstants.WormMotorRotationsPerInch;
     }
 
     //tuning stuff below

@@ -44,7 +44,7 @@ public class Constant {
     public static final class ArmConstants{
         public static final int ClawMotor = 12;
         public static final int WormMotor = 17;
-        public static final double ClawMaxPercent = 0.25;
+        public static final double ClawMaxPercent = 0.35;
         public static final int claw_ConeStallCurLimitAmps = 65;
         public static final int claw_CubeStallCurLimitAmps = 50;
 
@@ -52,16 +52,18 @@ public class Constant {
         //than a turn at the top. The desired max position determined imperically was 110 motor rotations
         // so we made this ration 7.33, 
         public static final double WormMotorRotationsPerInch = 7.33;
-        public static final double WormPositionMax = 16;//inches of rod
+        public static final double WormPositionMax = 17;//inches of rod
         public static final double WormPositionFrontCone = 14;
         public static final double WormPositionMin = 0;//inches of rod
         public static final double WormPositionOutsideRobot = 5; //inches of rod
         public static final double ExtendMotorRotationsPerInch = 3.8197;//Spool size is 1" circumfrence is pi, therefore 1/pi spool rotations = 1 inch. Gear box is 12:1.
+        public static final double WormPositionHPCone = 14.2;
+        public static final double WormPositionHPCube = 14.7;
         public static final int ExtendMotor = 13;
         public static final double ExtendPositionMax = 20; //inches
         public static final double ExtendPositionFrontCone = 5;
-        public static final double ExtendPositionFloorCone = 3;
-        public static final double ExtendPositionFloorCube = 1;
+        public static final double ExtendPositionFloorCone = 1.4;
+        public static final double ExtendPositionFloorCube = 0;
         public static final double ExtendPositionMin = 0; //inches
     }
     public static final class ControllerConstants{
@@ -77,7 +79,7 @@ public class Constant {
         All
     }
     public static final class AutoConstants {
-        public static final double kPTranslationController = 0.01;
-        public static final double kPThetaController = 0.01;
+        public static final double kPTranslationController = 0.1;
+        public static final double kPThetaController = 0.1;
     }
 }

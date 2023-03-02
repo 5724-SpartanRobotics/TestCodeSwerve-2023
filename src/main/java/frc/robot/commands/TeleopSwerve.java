@@ -37,8 +37,9 @@ public class TeleopSwerve extends CommandBase {
     public void execute(){
         double xAxis;
         double yAxis;
+        double zAxis;
         double speedMod = 1;
-        if(controller.getRawButton(1)){
+        if(controller.getRawButton(11)){
             speedMod = 0.25;
         }
         // This chunk of code locks certain joystick directions if buttons are pressed
@@ -54,8 +55,11 @@ public class TeleopSwerve extends CommandBase {
             xAxis = -controller.getY();
             
         }
-        double zAxis = -controller.getZ() / 2;
-
+        if(controller.getRawButton(2)) {
+            zAxis = 0;
+        } else {
+            zAxis = -controller.getZ() / 4;
+        }
         // Power Array Auto Align Code
         // Conditional is a check for having a combination of buttons pressed
         if((controller.getRawButton(7) || controller.getRawButton(9) || 
