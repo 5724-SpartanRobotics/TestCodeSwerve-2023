@@ -107,8 +107,6 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Parkless", noParkAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    SmartDashboard.putNumber("drive", 0);
-    SmartDashboard.putNumber("turn", 0);
     SmartDashboard.putNumber("setpos", 0);
     //  drive = new DriveTrainSubsystem();
     //  drive.setDefaultCommand(new RunCommand(() -> {
@@ -168,17 +166,11 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    SmartDashboard.putNumber("turn", 0);
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    // Turn.set(SmartDashboard.getNumber("turn", 0));
-    double ang = SmartDashboard.getNumber("turn", 0);
-    double dri = SmartDashboard.getNumber("drive", 0);
-  //  drive.driveCommand(drivestick.getX(), -drivestick.getY(), drivestick.getZ());
-
   }
 
   /** This function is called once when the robot is disabled. */
