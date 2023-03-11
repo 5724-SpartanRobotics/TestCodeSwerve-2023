@@ -63,7 +63,18 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         }
 
         public void setGyroZero() {
-             gyro.setYaw(90);
+             gyro.setYaw(0);
+        }
+
+        public void ZeroDriveSensors(Pose2d xy) {
+            LF.ZeroDriveSensor();
+            RF.ZeroDriveSensor();
+            RB.ZeroDriveSensor();
+            LB.ZeroDriveSensor();
+            //zero the robot pose
+            System.out.println("old pose " + swerveDriveOdometry.getPoseMeters().getX() + ", " + swerveDriveOdometry.getPoseMeters().getY());
+            swerveDriveOdometry.resetPosition(lastUpdatedGyroHeading, new SwerveModulePosition[] {LF.getPosition(), RF.getPosition(), LB.getPosition(), RB.getPosition()}, xy);
+            System.out.println("new pose " + swerveDriveOdometry.getPoseMeters().getX() + ", " + swerveDriveOdometry.getPoseMeters().getY());
         }
 
         // Used by helixnavigator
@@ -90,14 +101,23 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             }
             UpdateGyro();
             robotPose = swerveDriveOdometry.update(getGyroHeading(), new SwerveModulePosition[] {LF.getPosition(), RF.getPosition(), LB.getPosition(), RB.getPosition()});
+            if (DebugSetting.TraceLevel == DebugLevel.Swerve){
+                SmartDashboard.putNumber("RobotPoseX", robotPose.getX());
+                SmartDashboard.putNumber("RobotPoseY", robotPose.getY());
+            }
+
         }
 
         private void UpdateGyro() {
             lastUpdatedGyroHeading = Rotation2d.fromDegrees(gyro.getYaw());
         }
 
+        public void flipGyro() {
+            gyro.setYaw(gyro.getYaw() - 180);
+        }
+
         public void drive(Translation2d translation, double rotation){
-            translation.times(1);
+            // translation.times(1);
             SwerveModuleState[] swerveModStates = swerveDriveKinematics.toSwerveModuleStates(
                 ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, getGyroHeading()));
             SwerveDriveKinematics.desaturateWheelSpeeds(swerveModStates, DriveConstants.maxRobotSpeedmps);
@@ -137,6 +157,6 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             }
         }
         public Pose2d getPose() {
-            return swerveDriveOdometry.getPoseMeters();
+            return robotPose;
         }
 }

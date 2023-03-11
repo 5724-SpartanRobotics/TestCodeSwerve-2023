@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,6 +37,9 @@ public class TeleopSwerve extends CommandBase {
 
     @Override
     public void execute(){
+        if (DriverStation.isAutonomous()){
+            return;
+        }
         double xAxis;
         double yAxis;
         double zAxis;
@@ -50,13 +54,13 @@ public class TeleopSwerve extends CommandBase {
         if(controller.getRawButton(5)) {
             yAxis = 0;
         } else {
-            yAxis = controller.getX();
+            yAxis = -controller.getY();
         } 
 
         if(controller.getRawButton(3)) {
             xAxis = 0;
         } else {
-            xAxis = -controller.getY();
+            xAxis = -controller.getX();
             
         }
         if(controller.getRawButton(2)) {
@@ -82,6 +86,11 @@ public class TeleopSwerve extends CommandBase {
         zAxis = (Math.abs(zAxis) < ControllerConstants.joystickDeadband) ? 0 : zAxis * speedMod;
 
         double rotation = zAxis * DriveConstants.maxAngularVelocityRps;
+        if (DebugSetting.TraceLevel == DebugLevel.Swerve) {
+            SmartDashboard.putNumber("ControllerRotation", rotation);
+            SmartDashboard.putNumber("ControllerX", xAxis);
+            SmartDashboard.putNumber("ControllerY", yAxis);
+        }
         Translation2d translation = new Translation2d(yAxis, xAxis).times(DriveConstants.maxRobotSpeedmps);
         swerveDrive.drive(translation, rotation);
     }

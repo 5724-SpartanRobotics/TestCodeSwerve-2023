@@ -184,6 +184,10 @@ public class SwerveModule {
 
     }
 
+    public void ZeroDriveSensor() {
+        drive.setSelectedSensorPosition(0);
+    }
+
     private void resetTurnToAbsolute(){
         //get the absolute encoder position and subtract the starting offset, to be used to reset the encoder so it knows where we are
         double absPosition = Conversions.radiansToFalcon(canCoder.getAbsolutePosition() - offset);
@@ -247,6 +251,7 @@ public class SwerveModule {
         if (DebugSetting.TraceLevel == DebugLevel.Swerve || DebugSetting.TraceLevel == DebugLevel.All){
             SmartDashboard.putNumber("Pos FB " + Name, Units.radiansToDegrees(Conversions.falconToRadians(turn.getSelectedSensorPosition())));
             SmartDashboard.putNumber(canCoderName,  Units.radiansToDegrees(canCoder.getAbsolutePosition() - offset));
+            SmartDashboard.putNumber("Drive FB " + Name, drive.getSelectedSensorPosition());
         }
     }
   }

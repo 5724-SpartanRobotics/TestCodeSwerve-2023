@@ -42,6 +42,7 @@ import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestAutoFull;
 import frc.robot.commands.WithoutPark;
 import frc.robot.commands.HelixAutoTools.TrajectoriesManager;
+import frc.robot.commands.HelixAutoTools.Paths.Path;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -56,6 +57,7 @@ import edu.wpi.first.cscore.UsbCamera;
  * project.
  */
 public class Robot extends TimedRobot {
+  private boolean wasAutoFlag;
   private TrajectoriesManager trajectoriesManager = new TrajectoriesManager(new File(Filesystem.getDeployDirectory(), "trajectories/"));
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
@@ -108,6 +110,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     SmartDashboard.putNumber("setpos", 0);
+    drive.setGyroZero();
     //  drive = new DriveTrainSubsystem();
     //  drive.setDefaultCommand(new RunCommand(() -> {
       
@@ -144,6 +147,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    wasAutoFlag = true;
     SmartDashboard.putNumber("xSpeed", 0);
     SmartDashboard.putNumber("ySpeed", 0);
     SmartDashboard.putNumber("rotationAuto", 0);
@@ -157,8 +161,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    Translation2d temp = new Translation2d(SmartDashboard.getNumber("xSpeed", 0), SmartDashboard.getNumber("ySpeed", 0));
-    drive.drive(temp, SmartDashboard.getNumber("rotationAuto", 0));
     // field.setTarget(0, 0, 0);
     // field.update();
   }
@@ -166,6 +168,10 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    if(wasAutoFlag) {
+      wasAutoFlag = false;
+      drive.flipGyro();
+    }
   }
 
   /** This function is called periodically during operator control. */

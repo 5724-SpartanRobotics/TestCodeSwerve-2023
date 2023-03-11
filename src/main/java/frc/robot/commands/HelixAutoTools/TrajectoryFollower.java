@@ -29,6 +29,8 @@ public class TrajectoryFollower extends CommandBase {
 
   @Override
   public void initialize() {
+    System.out.println("Init :)");
+    drive.ZeroDriveSensors(trajectory.getInitialPose());
     timer.reset();
     timer.start();
     
@@ -56,9 +58,9 @@ public class TrajectoryFollower extends CommandBase {
     // double vy = yController.calculate(-currentPose.getY(), dt) - refState.velocity.y;
     // double omega = -thetaController.calculate(-currentPose.getRotation().getRadians(), dt) + refState.velocity.z;
 
-    double vx = xController.calculate(currentPose.getY(), dt)-refState.velocity.x;
-    double vy = yController.calculate(-currentPose.getX(), dt)-refState.velocity.y;
-    double omega = thetaController.calculate(currentPose.getRotation().getRadians(), dt) - refState.velocity.z;
+    double vx = xController.calculate(currentPose.getX(), dt)-refState.velocity.x;
+    double vy = yController.calculate(currentPose.getY(), dt)-refState.velocity.y;
+    double omega = thetaController.calculate(currentPose.getRotation().getRadians(), dt)- refState.velocity.z;
 
     SmartDashboard.putNumber("AutoTime", dt);
     SmartDashboard.putNumber("vxauto", vx);
@@ -66,7 +68,7 @@ public class TrajectoryFollower extends CommandBase {
     SmartDashboard.putNumber("omegaauto", omega);
 
     // Very dumb fix, should be x,y
-    drive.drive(new Translation2d(vy, vx), omega);
+    drive.drive(new Translation2d(vx, vy), omega);
     lastTime = time;
   }
 

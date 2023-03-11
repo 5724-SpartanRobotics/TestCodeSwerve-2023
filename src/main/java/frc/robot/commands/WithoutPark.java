@@ -19,27 +19,27 @@ public class WithoutPark extends SequentialCommandGroup {
         Path pathing = trajectoriesManager.loadTrajectory("Basic0");
         addCommands(
             new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    arm.driveRotation(1);
-                    System.out.println("running arm");
-                }, arm),
-                new WaitCommand(2),
-                new InstantCommand(() -> {
-                    arm.driveExtension(1);
-                    System.out.println("extending arm");
-                }, arm),
-                new WaitCommand(4),
-                new InstantCommand(() -> {
-                    arm.zoop(1  * ArmConstants.ClawMaxPercent * 6000);
-                    System.out.println("running claw");
-                }, arm),
-                new WaitCommand(2),
-                new InstantCommand(() -> {
-                    arm.driveRotation(-1);
-                    arm.driveExtension(-1);
-                }),
-                new WaitCommand(2)
-                // new TrajectoryFollower(drive, pathing)
+                // new InstantCommand(() -> {
+                //     arm.driveRotation(1);
+                //     System.out.println("running arm");
+                // }, arm),
+                // new WaitCommand(2),
+                // new InstantCommand(() -> {
+                //     arm.driveExtension(1);
+                //     System.out.println("extending arm");
+                // }, arm),
+                // new WaitCommand(4),
+                // new InstantCommand(() -> {
+                //     arm.zoop(1  * ArmConstants.ClawMaxPercent * 6000);
+                //     System.out.println("running claw");
+                // }, arm),
+                // new WaitCommand(2),
+                // new InstantCommand(() -> {
+                //     arm.driveRotation(-1);
+                //     arm.driveExtension(-1);
+                // }),
+                // new WaitCommand(2),
+                new TrajectoryFollower(drive, pathing)
             )
         );
     }
