@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+
 import java.io.File;
 
 import javax.print.CancelablePrintJob;
@@ -39,11 +40,14 @@ import frc.robot.Subsystems.Field;
 import frc.robot.commands.ArmControl;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.TestAutoFull;
+import frc.robot.commands.WithoutPark;
 import frc.robot.commands.HelixAutoTools.TrajectoriesManager;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.cameraserver.CameraServer;
+
+import edu.wpi.first.cscore.UsbCamera;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -73,7 +77,8 @@ public class Robot extends TimedRobot {
   private XboxController operator = new XboxController(1);
   private double[] dummyArray = new double[1];
 
-  private Command testAuto;
+  private Command parkAuto;
+  private Command noParkAuto;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -83,19 +88,23 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     CameraServer.startAutomaticCapture();
+    UsbCamera cam2 = CameraServer.startAutomaticCapture();
     System.out.println(Filesystem.getDeployDirectory());
     trajectoriesManager.loadAllTrajectories();
     //if using rick's subsystem uncoment these
     drive = new DriveTrainSubsystemRick();
     drive.setDefaultCommand(new TeleopSwerve(drive, drivestick));
-    testAuto = new TestAutoFull(drive, trajectoriesManager);
 
     arm = new ArmSubsystem();
     arm.setDefaultCommand(new ArmControl(arm, operator));
 
+    parkAuto = new TestAutoFull(drive, arm, trajectoriesManager);
+    noParkAuto = new WithoutPark(drive, arm, trajectoriesManager);
+
+
     dummyArray[0] = -1;
-    m_chooser.setDefaultOption("Default Auto", testAuto);
-    // m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.setDefaultOption("Default Auto", parkAuto);
+    m_chooser.addOption("Parkless", noParkAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
     SmartDashboard.putNumber("drive", 0);

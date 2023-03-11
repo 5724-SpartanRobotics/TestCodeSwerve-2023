@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems.DriveTrainInterface;
+import frc.robot.Subsystems.DriveTrainSubsystemRick;
 import frc.robot.Subsystems.Constant.ControllerConstants;
 import frc.robot.Subsystems.Constant.DebugLevel;
 import frc.robot.Subsystems.Constant.DebugSetting;
@@ -14,14 +15,14 @@ import frc.robot.Subsystems.Constant.DriveConstants;
 
 public class TeleopSwerve extends CommandBase {
     private Joystick controller;
-    private DriveTrainInterface swerveDrive;
+    private DriveTrainSubsystemRick swerveDrive;
 
     /**
      * Drive Controller
      * @param swerveDrive The drive train subsystem
      * @param controller A joystick
      */
-    public TeleopSwerve(DriveTrainInterface swerveDrive, Joystick controller){
+    public TeleopSwerve(DriveTrainSubsystemRick swerveDrive, Joystick controller){
         this.controller = controller;
         this.swerveDrive = swerveDrive;
         addRequirements((SubsystemBase)swerveDrive);
@@ -42,6 +43,9 @@ public class TeleopSwerve extends CommandBase {
         if(controller.getRawButton(11)){
             speedMod = 0.25;
         }
+        else if (controller.getRawButton(9)) {
+            speedMod = 0.65;
+        }
         // This chunk of code locks certain joystick directions if buttons are pressed
         if(controller.getRawButton(5)) {
             yAxis = 0;
@@ -59,6 +63,9 @@ public class TeleopSwerve extends CommandBase {
             zAxis = 0;
         } else {
             zAxis = -controller.getZ() / 4;
+        }
+        if(controller.getRawButton(7)) {
+            swerveDrive.setGyroZero();
         }
         // Power Array Auto Align Code
         // Conditional is a check for having a combination of buttons pressed

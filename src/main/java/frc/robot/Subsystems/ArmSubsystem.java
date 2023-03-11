@@ -38,8 +38,8 @@ public class ArmSubsystem extends SubsystemBase {
     double worm_kI = 0.000000007;
     double worm_kD = 0.0;
     double worm_kFF = 0.00;
-    double wormMaxVel = 2800; // rpm  
-    double wormMaxAcc = 2000; //rpm/sec
+    double wormMaxVel = 5200; // rpm  
+    double wormMaxAcc = 3500; //rpm/sec
 
     double extend_kP = 0.0002;
     double extend_kI = 0.00000007;

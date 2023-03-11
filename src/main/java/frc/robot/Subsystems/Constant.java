@@ -21,8 +21,8 @@ public class Constant {
         public static final int RBTurnMotor = 3;
         public static final int RBDriveMotor = 2;
         public static final int RBCanID = 59;
-        public static final double trackWidth = Units.inchesToMeters(30.0);//wheel center to center width
-        public static final double wheelBase = Units.inchesToMeters(30.0);//wheel center to center front / back distance
+        public static final double trackWidth = Units.inchesToMeters(24.0);//wheel center to center width
+        public static final double wheelBase = Units.inchesToMeters(25.0);//wheel center to center front / back distance
         public static final double wheelDiameter = Units.inchesToMeters(4.125);//guessing there is about 1/8" added for the tread. The wheel diameter is 4"
         public static final double wheelCircumfrence = wheelDiameter * Math.PI;//meters
         public static final double driveGearRatio = 6.75;
@@ -45,7 +45,7 @@ public class Constant {
         public static final int ClawMotor = 12;
         public static final int WormMotor = 17;
         public static final double ClawMaxPercent = 0.35;
-        public static final int claw_ConeStallCurLimitAmps = 65;
+        public static final int claw_ConeStallCurLimitAmps = 75;
         public static final int claw_CubeStallCurLimitAmps = 50;
 
         //gear ratio is 4 and the worm gear motion isn't linear. one turn at the bottom has more arm angle
@@ -62,7 +62,7 @@ public class Constant {
         public static final int ExtendMotor = 13;
         public static final double ExtendPositionMax = 20; //inches
         public static final double ExtendPositionFrontCone = 5;
-        public static final double ExtendPositionFloorCone = 1.4;
+        public static final double ExtendPositionFloorCone = 2.0;
         public static final double ExtendPositionFloorCube = 0;
         public static final double ExtendPositionMin = 0; //inches
     }
@@ -79,7 +79,7 @@ public class Constant {
         All
     }
     public static final class AutoConstants {
-        public static final double kPTranslationController = 0.1;
-        public static final double kPThetaController = 0.1;
+        public static final double kPTranslationController = 0.12;
+        public static final double kPThetaController = 0.08;
     }
 }

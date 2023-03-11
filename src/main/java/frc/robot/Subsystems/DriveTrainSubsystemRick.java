@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -61,6 +62,10 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             return lastUpdatedGyroHeading;
         }
 
+        public void setGyroZero() {
+             gyro.setYaw(90);
+        }
+
         // Used by helixnavigator
         public Rotation2d getHeading(){
             double raw_yaw = gyro.getYaw() - offset; // Returns yaw as -180 to +180.
@@ -92,6 +97,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         }
 
         public void drive(Translation2d translation, double rotation){
+            translation.times(1);
             SwerveModuleState[] swerveModStates = swerveDriveKinematics.toSwerveModuleStates(
                 ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, getGyroHeading()));
             SwerveDriveKinematics.desaturateWheelSpeeds(swerveModStates, DriveConstants.maxRobotSpeedmps);
