@@ -67,13 +67,13 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         }
 
         public void ZeroDriveSensors(Pose2d xy) {
-            LF.ZeroDriveSensor();
-            RF.ZeroDriveSensor();
-            RB.ZeroDriveSensor();
-            LB.ZeroDriveSensor();
+            // LF.ZeroDriveSensor();
+            // RF.ZeroDriveSensor();
+            // RB.ZeroDriveSensor();
+            // LB.ZeroDriveSensor();
             //zero the robot pose
             System.out.println("old pose " + swerveDriveOdometry.getPoseMeters().getX() + ", " + swerveDriveOdometry.getPoseMeters().getY());
-            swerveDriveOdometry.resetPosition(lastUpdatedGyroHeading, new SwerveModulePosition[] {LF.getPosition(), RF.getPosition(), LB.getPosition(), RB.getPosition()}, xy);
+            swerveDriveOdometry.resetPosition(lastUpdatedGyroHeading, new SwerveModulePosition[] {LF.getPosition(), RF.getPosition(), LB.getPosition(), RB.getPosition()}, xy.times(3.28));
             System.out.println("new pose " + swerveDriveOdometry.getPoseMeters().getX() + ", " + swerveDriveOdometry.getPoseMeters().getY());
         }
 

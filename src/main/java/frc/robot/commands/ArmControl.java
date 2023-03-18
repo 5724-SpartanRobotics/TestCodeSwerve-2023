@@ -35,11 +35,8 @@ public class ArmControl extends CommandBase {
         } else if (controller.getXButton()) {
             //Set extend position to front pole
             arm.frontExtendPos();
-        } else if (controller.getBButton()) {
-            // extend at floor height of cone
-            arm.cubeFloorPos();
-        } else if (controller.getAButton()) {
-            arm.coneFloorPos();
+        } else if (controller.getYButton()) {
+            arm.extendIntakePos();
         } else {
             //stop jog
             arm.driveExtension(0);
@@ -52,13 +49,11 @@ public class ArmControl extends CommandBase {
         } else if(controller.getPOV() == 0) {
             //jog worm up
             arm.driveRotation(1);
-        } else if (controller.getYButton()) {
+        } else if (controller.getAButton()) {
             //Set hoist position to front pole height
             arm.frontHoistPos();
-        } else if (controller.getPOV() == 90) {
-            arm.humanPlayerCone();
-        } else if (controller.getPOV() == 270) {
-            arm.humanPlayerCube();
+        } else if (controller.getBButton()) {
+            arm.wormIntakePos();
         } else {
             //stop jog. 
             arm.driveRotation(0);

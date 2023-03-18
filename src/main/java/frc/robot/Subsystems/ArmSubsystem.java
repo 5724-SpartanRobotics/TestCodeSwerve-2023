@@ -34,19 +34,19 @@ public class ArmSubsystem extends SubsystemBase {
     Boolean tunePidMode = false;//set to true to have position refs and gains set from smart dashboard.
     //The reference to the PID is in motor rotations, but all the gains and feed forward are normalized
     // to 1 = max, -1 = min
-    double worm_kP = 0.00018;
+    double worm_kP = 0.000185;
     double worm_kI = 0.000000007;
     double worm_kD = 0.0;
     double worm_kFF = 0.00;
     double wormMaxVel = 5200; // rpm  
-    double wormMaxAcc = 3500; //rpm/sec
+    double wormMaxAcc = 4000; //rpm/sec
 
     double extend_kP = 0.0002;
     double extend_kI = 0.00000007;
     double extend_kD = 0.0;
     double extend_kFF = 0.00;
-    double extendMaxVel = 2300; // rpm  
-    double extendMaxAcc = 1500; //rpm/sec
+    double extendMaxVel = 4000; // rpm  
+    double extendMaxAcc = 2000; //rpm/sec
 
     double claw_kP = 0.0003;
     double claw_kI = 0.000000;
@@ -212,36 +212,25 @@ public class ArmSubsystem extends SubsystemBase {
      * Set the hoist positions to reach the front cone post
      */
     public void frontHoistPos() {
-        wormPosRef = ArmConstants.WormPositionFrontCone * ArmConstants.WormMotorRotationsPerInch;
+        wormPosRef = ArmConstants.WormMidRung * ArmConstants.WormMotorRotationsPerInch;
     }
+
+    
 
     /**
      * Set the position to reach the front cone post
      */
     public void frontExtendPos() {
-        extendPosRef = ArmConstants.ExtendPositionFrontCone * ArmConstants.ExtendMotorRotationsPerInch;
+        extendPosRef = ArmConstants.ExtendMidRung * ArmConstants.ExtendMotorRotationsPerInch;
     }
 
-    /**
-     * Set the arm inside the robot with the claw at cube pickup height
-     */
-    public void cubeFloorPos() {
-        extendPosRef = ArmConstants.ExtendPositionFloorCube * ArmConstants.ExtendMotorRotationsPerInch;
+    public void wormIntakePos() {
+        wormPosRef = ArmConstants.WormPositionIntake * ArmConstants.WormMotorRotationsPerInch;
     }
 
-    /**
-     * Set the arm inside the robot with the claw at cone pickup height.
-     */
-    public void coneFloorPos() {
-        extendPosRef = ArmConstants.ExtendPositionFloorCone * ArmConstants.ExtendMotorRotationsPerInch;
-    }
-
-    public void humanPlayerCone() {
-        wormPosRef = ArmConstants.WormPositionHPCone * ArmConstants.WormMotorRotationsPerInch;
-    }
-
-    public void humanPlayerCube() {
-        wormPosRef = ArmConstants.WormPositionHPCube * ArmConstants.WormMotorRotationsPerInch;
+    // Set extension to intake pos
+    public void extendIntakePos() {
+        extendPosRef = ArmConstants.ExtendPositionIntake * ArmConstants.ExtendMotorRotationsPerInch;
     }
 
     //tuning stuff below

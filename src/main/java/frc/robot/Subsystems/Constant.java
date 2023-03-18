@@ -45,32 +45,29 @@ public class Constant {
         public static final int ClawMotor = 12;
         public static final int WormMotor = 17;
         public static final double ClawMaxPercent = 0.35;
-        public static final int claw_ConeStallCurLimitAmps = 75;
+        public static final int claw_ConeStallCurLimitAmps = 50;
         public static final int claw_CubeStallCurLimitAmps = 50;
 
         //gear ratio is 4 and the worm gear motion isn't linear. one turn at the bottom has more arm angle
         //than a turn at the top. The desired max position determined imperically was 110 motor rotations
         // so we made this ration 7.33, 
         public static final double WormMotorRotationsPerInch = 7.33;
-        public static final double WormPositionMax = 17;//inches of rod
-        public static final double WormPositionFrontCone = 14;
+        public static final double WormPositionMax = 15.3;//inches of rod
         public static final double WormPositionMin = 0;//inches of rod
-        public static final double WormPositionOutsideRobot = 5; //inches of rod
+        public static final double WormPositionIntake = 2.59; //inches of rod
+        public static final double WormMidRung = 12.6;
         public static final double ExtendMotorRotationsPerInch = 3.8197;//Spool size is 1" circumfrence is pi, therefore 1/pi spool rotations = 1 inch. Gear box is 12:1.
-        public static final double WormPositionHPCone = 14.2;
-        public static final double WormPositionHPCube = 14.7;
         public static final int ExtendMotor = 13;
         public static final double ExtendPositionMax = 20; //inches
-        public static final double ExtendPositionFrontCone = 5;
-        public static final double ExtendPositionFloorCone = 2.0;
-        public static final double ExtendPositionFloorCube = 0;
+        public static final double ExtendPositionIntake = 8.64;
         public static final double ExtendPositionMin = 0; //inches
+        public static final double ExtendMidRung = 7.07;
     }
     public static final class ControllerConstants{
         public static double joystickDeadband = 0.1;//a deadband that you must overcome for the joystick input, otherwise we send 0
     }
     public static final class DebugSetting{
-        public static final DebugLevel TraceLevel = DebugLevel.Swerve;//set this to get more values to smart dashboard.
+        public static final DebugLevel TraceLevel = DebugLevel.Off;//set this to get more values to smart dashboard.
     }
     public static enum DebugLevel{
         Off,
@@ -79,7 +76,7 @@ public class Constant {
         All
     }
     public static final class AutoConstants {
-        public static final double kPTranslationController = 0.2;
-        public static final double kPThetaController = 0.15;
+        public static final double kPTranslationController = 0;
+        public static final double kPThetaController = 0;
     }
 }
