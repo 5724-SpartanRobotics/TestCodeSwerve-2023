@@ -35,9 +35,9 @@ public class TrajectoryFollower extends CommandBase {
     timer.reset();
     timer.start();
     
-    xController = new PIDController(AutoConstants.kPTranslationController, AutoConstants.kPTranslationController * 0.1, 0);
-    yController = new PIDController(AutoConstants.kPTranslationController * 0.5, AutoConstants.kPTranslationController * 0.1, 0);
-    thetaController = new PIDController(AutoConstants.kPThetaController, AutoConstants.kPThetaController * 0.1, 0);
+    xController = new PIDController(AutoConstants.kPTranslationController, 0, 0);
+    yController = new PIDController(AutoConstants.kPTranslationController, 0, 0);
+    thetaController = new PIDController(AutoConstants.kPThetaController, 0, 0);
     thetaController.setContinous(true);
     thetaController.setInputRange(Math.PI * 2);
 
@@ -59,16 +59,16 @@ public class TrajectoryFollower extends CommandBase {
     // double vy = yController.calculate(-currentPose.getY(), dt) - refState.velocity.y;
     // double omega = -thetaController.calculate(-currentPose.getRotation().getRadians(), dt) + refState.velocity.z;
 
-    SmartDashboard.putNumber("Xpos", Units.feetToMeters(currentPose.getX()));
-    SmartDashboard.putNumber("Ypos", Units.feetToMeters(currentPose.getY()));
-    SmartDashboard.putNumber("Zpos", currentPose.getRotation().getRadians());
+    SmartDashboard.putNumber("Xpos", -currentPose.getX());
+    SmartDashboard.putNumber("Ypos", -currentPose.getY());
+    SmartDashboard.putNumber("Zpos", -currentPose.getRotation().getRadians());
     SmartDashboard.putNumber("Xref", refState.pose.getX());
     SmartDashboard.putNumber("Yref", refState.pose.getY());
     SmartDashboard.putNumber("Zref", refState.pose.getRotation().getRadians());
 
-    double vx = xController.calculate(Units.feetToMeters(currentPose.getX()), dt)-refState.velocity.x;
-    double vy = yController.calculate(Units.feetToMeters(currentPose.getY()), dt)-refState.velocity.y;
-    double omega = thetaController.calculate(currentPose.getRotation().getRadians(), dt)- refState.velocity.z;
+    double vx = -xController.calculate(-currentPose.getX(), dt)-refState.velocity.x;
+    double vy = -yController.calculate(-currentPose.getY(), dt)-refState.velocity.y;
+    double omega = -thetaController.calculate(-currentPose.getRotation().getRadians(), dt)- refState.velocity.z;
 
     SmartDashboard.putNumber("AutoTime", dt);
     SmartDashboard.putNumber("vxauto", vx);

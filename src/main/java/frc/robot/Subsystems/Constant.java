@@ -76,7 +76,7 @@ public class Constant {
         All
     }
     public static final class AutoConstants {
-        public static final double kPTranslationController = 0;
-        public static final double kPThetaController = 0;
+        public static final double kPTranslationController = 6;
+        public static final double kPThetaController = 1;
     }
 }
