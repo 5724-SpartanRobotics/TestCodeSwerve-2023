@@ -39,8 +39,9 @@ import frc.robot.Subsystems.DriveTrainSubsystemRick;
 import frc.robot.Subsystems.Field;
 import frc.robot.commands.ArmControl;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.commands.TestAutoFull;
-import frc.robot.commands.WithoutPark;
+import frc.robot.commands.LeftAuto;
+import frc.robot.commands.RightAuto;
+import frc.robot.commands.ParkAuto;
 import frc.robot.commands.HelixAutoTools.TrajectoriesManager;
 import frc.robot.commands.HelixAutoTools.Paths.Path;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -79,8 +80,9 @@ public class Robot extends TimedRobot {
   private XboxController operator = new XboxController(1);
   private double[] dummyArray = new double[1];
 
+  private Command leftTwo;
+  private Command rightTwo;
   private Command parkAuto;
-  private Command noParkAuto;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -100,13 +102,15 @@ public class Robot extends TimedRobot {
     arm = new ArmSubsystem();
     arm.setDefaultCommand(new ArmControl(arm, operator));
 
-    parkAuto = new TestAutoFull(drive, arm, trajectoriesManager);
-    noParkAuto = new WithoutPark(drive, arm, trajectoriesManager);
+    leftTwo = new LeftAuto(drive, arm, trajectoriesManager);
+    rightTwo = new RightAuto(drive, arm, trajectoriesManager);
+    parkAuto = new ParkAuto(drive, arm, trajectoriesManager);
 
 
     dummyArray[0] = -1;
-    m_chooser.setDefaultOption("Default Auto", parkAuto);
-    m_chooser.addOption("Parkless", noParkAuto);
+    m_chooser.setDefaultOption("Left Two", leftTwo);
+    m_chooser.addOption("Right Two", rightTwo);
+    m_chooser.addOption("Park", parkAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
     SmartDashboard.putNumber("setpos", 0);

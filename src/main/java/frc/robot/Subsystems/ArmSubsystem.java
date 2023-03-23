@@ -233,6 +233,11 @@ public class ArmSubsystem extends SubsystemBase {
         extendPosRef = ArmConstants.ExtendPositionIntake * ArmConstants.ExtendMotorRotationsPerInch;
     }
 
+    public void weirdConeDrop() {
+        extendPosRef = ArmConstants.ExtendFunkyConeDrop * ArmConstants.ExtendMotorRotationsPerInch;
+        wormPosRef = ArmConstants.WormFunkyConeDrop * ArmConstants.WormMotorRotationsPerInch;
+    }
+
     //tuning stuff below
     private void PutTuneValuesToSmartDashboard(Boolean includeWorm, Boolean includeExtend, Boolean includeClaw)
     {

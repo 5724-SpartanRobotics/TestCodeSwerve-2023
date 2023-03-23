@@ -16,8 +16,8 @@ import frc.robot.commands.HelixAutoTools.TrajectoriesManager;
 import frc.robot.commands.HelixAutoTools.TrajectoryFollower;
 import frc.robot.commands.HelixAutoTools.Paths.Path;
 
-public class TestAutoFull extends SequentialCommandGroup {
-    public TestAutoFull(DriveTrainSubsystemRick drive, ArmSubsystem arm, TrajectoriesManager trajectoriesManager) {
+public class RightAuto extends SequentialCommandGroup {
+    public RightAuto(DriveTrainSubsystemRick drive, ArmSubsystem arm, TrajectoriesManager trajectoriesManager) {
         Path pathing = trajectoriesManager.loadTrajectory("2PieceQuestionable");
         addCommands(
             new SequentialCommandGroup(
@@ -34,14 +34,15 @@ public class TestAutoFull extends SequentialCommandGroup {
                 new InstantCommand(() -> {
                     arm.driveRotation(-1);
                 }),
-                new WaitCommand(1.1),
+                new WaitCommand(1),
                 new InstantCommand(() -> {
                     arm.driveRotation(0);
                     arm.driveExtension(-1);
                     arm.zoop(0.5 * ArmConstants.ClawMaxPercent * 6000);
                 }),
                 new ParallelDeadlineGroup(
-                    new TrajectoryFollower(drive, pathing),
+                    new WaitCommand(20),
+                    new TrajectoryFollower(drive, pathing, false),
                     new SequentialCommandGroup(
                         new WaitCommand(0.5),
                         new InstantCommand(() -> {
@@ -53,23 +54,20 @@ public class TestAutoFull extends SequentialCommandGroup {
                             arm.extendIntakePos();
                             arm.zoop(-1 * ArmConstants.ClawMaxPercent * 6000);
                         }),
-                        new WaitCommand(4),
+                        new WaitCommand(3),
                         new InstantCommand(() -> {
                             arm.driveExtension(-1);
                         }),
-                        new WaitCommand(2),
                         new InstantCommand(() -> {
                             arm.driveRotation(1);
+                            arm.driveExtension(1);
+                        }),
+                        new WaitCommand(3.3),
+                        new InstantCommand(() -> {
+                            arm.zoop(0.5 * ArmConstants.ClawMaxPercent * 6000);
                         })
                     )
-                ),
-                new InstantCommand(() -> {
-                    arm.driveExtension(1);
-                }),
-                new WaitCommand(1),
-                new InstantCommand(() -> {
-                    arm.zoop(0.5 * ArmConstants.ClawMaxPercent * 6000);
-                })
+                )
             )
         );
     }

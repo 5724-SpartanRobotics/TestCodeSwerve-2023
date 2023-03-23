@@ -20,6 +20,8 @@ import frc.robot.Subsystems.Constant.DriveConstants;
 
 public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrainInterface {
         // Swerve modules
+        private boolean parkFlag;
+
         private SwerveModule LF;
         private SwerveModule RF;
         private SwerveModule LB;
@@ -56,6 +58,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             SwerveModulePosition[] swerveInititialPositions = {LF.getPosition(), RF.getPosition(), LB.getPosition(), RB.getPosition()};
             swerveDriveOdometry = new SwerveDriveOdometry(swerveDriveKinematics, getGyroHeading(), swerveInititialPositions, robotPose);
             modules = new SwerveModule[] {LF, RF, LB, RB};
+            parkFlag = false;
         }
 
         public Rotation2d getGyroHeading(){
@@ -91,6 +94,9 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
 
         @Override
         public void periodic(){
+            SmartDashboard.putNumber("roll", gyro.getRoll());
+            SmartDashboard.putNumber("pitch", gyro.getPitch());
+
             //the gyro getGyroAngleY returns positive values as the robot turns clockwise. We want negative for clockwise
             LF.periodic();
             LB.periodic();
@@ -158,5 +164,23 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         }
         public Pose2d getPose() {
             return robotPose;
+        }
+
+        public void setFlag() {
+            parkFlag = false;
+        }
+
+        public void heyAreWeUpYet() {
+            if(Math.abs(gyro.getRoll()) < 11 && parkFlag){
+                System.out.println("up");
+                this.drive(new Translation2d(), 0.5);
+            }else if(Math.abs(gyro.getRoll()) > 11) {
+                this.drive(new Translation2d(-0.8, 0), 0);
+                System.out.println("flag");
+                parkFlag = true;
+            } else {
+                this.drive(new Translation2d(-1.3, 0), 0);
+                System.out.println("back");
+            }
         }
 }
