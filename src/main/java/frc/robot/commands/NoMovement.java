@@ -17,8 +17,8 @@ import frc.robot.commands.HelixAutoTools.TrajectoriesManager;
 import frc.robot.commands.HelixAutoTools.TrajectoryFollower;
 import frc.robot.commands.HelixAutoTools.Paths.Path;
 
-public class ParkAuto extends SequentialCommandGroup {
-    public ParkAuto(DriveTrainSubsystemRick drive, ArmSubsystem arm, TrajectoriesManager trajectoriesManager) {
+public class NoMovement extends SequentialCommandGroup {
+    public NoMovement(DriveTrainSubsystemRick drive, ArmSubsystem arm, TrajectoriesManager trajectoriesManager) {
         Path pathing = trajectoriesManager.loadTrajectory("Basic0");
         addCommands(
             new SequentialCommandGroup(
@@ -42,18 +42,6 @@ public class ParkAuto extends SequentialCommandGroup {
                     arm.driveExtension(-1);
                     arm.zoop(0.5 * ArmConstants.ClawMaxPercent * 6000);
                 })
-            ),
-            new ParallelDeadlineGroup(
-                new WaitCommand(15),
-                new SequentialCommandGroup(
-                    new WaitCommand(0.5),
-                    new InstantCommand(() -> {
-                        arm.driveRotation(-1);
-                    })
-                ),
-                new RunCommand(() -> {
-                    drive.heyAreWeUpYet();
-                }, drive)
             )
         );
     }

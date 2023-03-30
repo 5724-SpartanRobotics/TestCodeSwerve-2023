@@ -21,6 +21,7 @@ import frc.robot.Subsystems.Constant.DriveConstants;
 public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrainInterface {
         // Swerve modules
         private boolean parkFlag;
+        private boolean doneFlag;
 
         private SwerveModule LF;
         private SwerveModule RF;
@@ -59,6 +60,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             swerveDriveOdometry = new SwerveDriveOdometry(swerveDriveKinematics, getGyroHeading(), swerveInititialPositions, robotPose);
             modules = new SwerveModule[] {LF, RF, LB, RB};
             parkFlag = false;
+            doneFlag = false;
         }
 
         public Rotation2d getGyroHeading(){
@@ -168,18 +170,22 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
 
         public void setFlag() {
             parkFlag = false;
+            doneFlag = false;
         }
 
         public void heyAreWeUpYet() {
-            if(Math.abs(gyro.getRoll()) < 11 && parkFlag){
+            if(doneFlag) {
+
+            } else if(Math.abs(gyro.getRoll()) < 11.9 && parkFlag){
                 System.out.println("up");
-                this.drive(new Translation2d(), 0.5);
-            }else if(Math.abs(gyro.getRoll()) > 11) {
+                this.drive(new Translation2d(0, 0.1), 0);
+                doneFlag = true;
+            }else if(Math.abs(gyro.getRoll()) > 12.1) {
                 this.drive(new Translation2d(-0.8, 0), 0);
                 System.out.println("flag");
                 parkFlag = true;
             } else {
-                this.drive(new Translation2d(-1.3, 0), 0);
+                this.drive(new Translation2d(-2, 0), 0);
                 System.out.println("back");
             }
         }

@@ -40,6 +40,7 @@ import frc.robot.Subsystems.Field;
 import frc.robot.commands.ArmControl;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.LeftAuto;
+import frc.robot.commands.NoMovement;
 import frc.robot.commands.RightAuto;
 import frc.robot.commands.ParkAuto;
 import frc.robot.commands.HelixAutoTools.TrajectoriesManager;
@@ -83,6 +84,7 @@ public class Robot extends TimedRobot {
   private Command leftTwo;
   private Command rightTwo;
   private Command parkAuto;
+  private Command cringeAuto;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -105,12 +107,13 @@ public class Robot extends TimedRobot {
     leftTwo = new LeftAuto(drive, arm, trajectoriesManager);
     rightTwo = new RightAuto(drive, arm, trajectoriesManager);
     parkAuto = new ParkAuto(drive, arm, trajectoriesManager);
-
+    cringeAuto = new NoMovement(drive, arm, trajectoriesManager);
 
     dummyArray[0] = -1;
     m_chooser.setDefaultOption("Left Two", leftTwo);
     m_chooser.addOption("Right Two", rightTwo);
     m_chooser.addOption("Park", parkAuto);
+    m_chooser.addOption("Cringe", cringeAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
     SmartDashboard.putNumber("setpos", 0);

@@ -22,6 +22,7 @@ public class TrajectoryFollower extends CommandBase {
   private double lastTime = 0;
   private Timer timer = new Timer();
   private int inverted = 1;
+  private Pose2d initPose;
 
   public TrajectoryFollower(DriveTrainSubsystemRick drive, Path path, boolean invertedState) {
     addRequirements(drive);
@@ -36,8 +37,9 @@ public class TrajectoryFollower extends CommandBase {
 
   @Override
   public void initialize() {
+    initPose = trajectory.getInitialPose();
     System.out.println("Init :)");
-    drive.ZeroDriveSensors(trajectory.getInitialPose());
+    drive.ZeroDriveSensors(new Pose2d(new Translation2d(initPose.getX(), initPose.getY() * inverted), initPose.getRotation()));
     timer.reset();
     timer.start();
     
