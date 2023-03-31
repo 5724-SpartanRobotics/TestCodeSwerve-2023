@@ -34,7 +34,7 @@ public class ArmSubsystem extends SubsystemBase {
     Boolean tunePidMode = false;//set to true to have position refs and gains set from smart dashboard.
     //The reference to the PID is in motor rotations, but all the gains and feed forward are normalized
     // to 1 = max, -1 = min
-    double worm_kP = 0.000405;
+    double worm_kP = 0.0003;
     double worm_kI = 0.000000007;
     double worm_kD = 0.0;
     double worm_kFF = 0.00;
@@ -43,21 +43,21 @@ public class ArmSubsystem extends SubsystemBase {
     //max motor speed is 5676 RPM. This number gets multiplied by current speed
     // and added to the current position to have a softer stop. The first number
     // in the equation is a distance in inches that will be added / subtracted at max speed.
-    double wormDistMult = 0.5 * ArmConstants.WormMotorRotationsPerInch / 5676;
+    double wormDistMult = 3 * ArmConstants.WormMotorRotationsPerInch / 5676;
 
-    double extend_kP = 0.0003;
+    double extend_kP = 0.0004;
     double extend_kI = 0.00000007;
     double extend_kD = 0.0;
     double extend_kFF = 0.00;
     double extendMaxVel = 4000; // rpm  
-    double extendMaxAcc = 2000; //rpm/sec
-    double extendDistMult = 0.5 * ArmConstants.ExtendMotorRotationsPerInch / 5676;
+    double extendMaxAcc = 4000; //rpm/sec
+    double extendDistMult = 6 * ArmConstants.ExtendMotorRotationsPerInch / 5676;
 
     double claw_kP = 0.0003;
     double claw_kI = 0.000000;
     double claw_kFF = 0.000000;
-    double clawMaxVel = 2000; //rpm
-    double clawMaxAcc = 1000; //rpm/sec
+    double clawMaxVel = 4000; //rpm
+    double clawMaxAcc = 2000; //rpm/sec
     double clawSpeedRef = 0;
     double clawSpdRefTune = 0;
     int claw_StallCurLimitAmps = ArmConstants.claw_ConeStallCurLimitAmps;
@@ -137,9 +137,14 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("ClawCubeForce", claw_StallCurLimitAmps == ArmConstants.claw_ConeStallCurLimitAmps);
     }
 
+    public boolean usingLotsOfCurrent() {
+        return claw.getOutputCurrent() > 30;
+    }
+
     @Override
     public void periodic() {
         if (DebugSetting.TraceLevel == DebugLevel.Arm || DebugSetting.TraceLevel == DebugLevel.All) {
+            SmartDashboard.putNumber("arm speed",extendEncoder.getVelocity());
             SmartDashboard.putNumber("WormPosFbk", wormEncoder.getPosition());
             SmartDashboard.putNumber("ExtendPosFbk", extendEncoder.getPosition());
             SmartDashboard.putNumber("ExtendPosRef", extendPosRef);

@@ -39,6 +39,7 @@ import frc.robot.Subsystems.DriveTrainInterface;
 import frc.robot.Subsystems.DriveTrainSubsystem;
 import frc.robot.Subsystems.DriveTrainSubsystemRick;
 import frc.robot.Subsystems.Field;
+import frc.robot.Subsystems.LedSubsystem;
 import frc.robot.commands.ArmControl;
 import frc.robot.commands.GoToAPlace;
 import frc.robot.commands.TeleopSwerve;
@@ -106,6 +107,9 @@ public class Robot extends TimedRobot {
 
     arm = new ArmSubsystem();
     arm.setDefaultCommand(new ArmControl(arm, operator));
+
+    LedSubsystem ledSubsystem = new LedSubsystem(0, arm);
+    // ledSubsystem.setDefaultCommand(new RunCommand(() -> {ledSubsystem.Yellow();}, ledSubsystem));
 
     leftTwo = new LeftAuto(drive, arm, trajectoriesManager);
     rightTwo = new RightAuto(drive, arm, trajectoriesManager);
