@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
@@ -38,6 +40,7 @@ import frc.robot.Subsystems.DriveTrainSubsystem;
 import frc.robot.Subsystems.DriveTrainSubsystemRick;
 import frc.robot.Subsystems.Field;
 import frc.robot.commands.ArmControl;
+import frc.robot.commands.GoToAPlace;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.LeftAuto;
 import frc.robot.commands.NoMovement;
@@ -117,7 +120,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     SmartDashboard.putNumber("setpos", 0);
-    drive.setGyroZero();
+    drive.flipGyro();
     //  drive = new DriveTrainSubsystem();
     //  drive.setDefaultCommand(new RunCommand(() -> {
       
@@ -177,13 +180,17 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     if(wasAutoFlag) {
       wasAutoFlag = false;
-      drive.flipGyro();
     }
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    Command setPos;
+    if(drivestick.getRawButton(8)) {
+      setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(), new Rotation2d()), true);
+      setPos.schedule();
+    }
   }
 
   /** This function is called once when the robot is disabled. */

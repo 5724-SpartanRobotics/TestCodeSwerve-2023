@@ -66,10 +66,7 @@ public class TeleopSwerve extends CommandBase {
         if(controller.getRawButton(2)) {
             zAxis = 0;
         } else {
-            zAxis = -controller.getZ() / 4;
-            if(controller.getRawButton(11)){
-                zAxis = zAxis * 2;
-            }
+            zAxis = -controller.getZ() / 2;
         }
         if(controller.getRawButton(7)) {
             swerveDrive.setGyroZero();

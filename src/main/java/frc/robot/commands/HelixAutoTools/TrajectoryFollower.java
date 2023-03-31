@@ -59,8 +59,8 @@ public class TrajectoryFollower extends CommandBase {
     State refState = trajectory.sample(time);
     Pose2d currentPose = drive.getPose();
 
-    xController.setReference(refState.pose.getX());
-    yController.setReference(inverted * refState.pose.getY());
+    xController.setReference(-refState.pose.getX());
+    yController.setReference(-inverted * refState.pose.getY());
     thetaController.setReference(-refState.pose.getRotation().getRadians() * inverted);
 
     // double vx = xController.calculate(-currentPose.getX(), dt) - refState.velocity.x;
@@ -74,8 +74,8 @@ public class TrajectoryFollower extends CommandBase {
     SmartDashboard.putNumber("Yref", refState.pose.getY());
     SmartDashboard.putNumber("Zref", refState.pose.getRotation().getRadians());
 
-    double vx = -xController.calculate(-currentPose.getX(), dt)-refState.velocity.x;
-    double vy = -yController.calculate(-currentPose.getY(), dt)-refState.velocity.y * inverted;
+    double vx = -xController.calculate(currentPose.getX(), dt)+refState.velocity.x;
+    double vy = -yController.calculate(currentPose.getY(), dt)+refState.velocity.y * inverted;
     double omega = -thetaController.calculate(-currentPose.getRotation().getRadians(), dt)+ refState.velocity.z * inverted;
 
     SmartDashboard.putNumber("AutoTime", dt);

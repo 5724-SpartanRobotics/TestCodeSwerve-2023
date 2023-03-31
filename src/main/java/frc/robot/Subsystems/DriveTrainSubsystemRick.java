@@ -98,7 +98,6 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         public void periodic(){
             SmartDashboard.putNumber("roll", gyro.getRoll());
             SmartDashboard.putNumber("pitch", gyro.getPitch());
-
             //the gyro getGyroAngleY returns positive values as the robot turns clockwise. We want negative for clockwise
             LF.periodic();
             LB.periodic();
@@ -121,7 +120,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         }
 
         public void flipGyro() {
-            gyro.setYaw(gyro.getYaw() - 180);
+            gyro.setYaw(180);
         }
 
         public void drive(Translation2d translation, double rotation){
