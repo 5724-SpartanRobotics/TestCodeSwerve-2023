@@ -34,19 +34,24 @@ public class ArmSubsystem extends SubsystemBase {
     Boolean tunePidMode = false;//set to true to have position refs and gains set from smart dashboard.
     //The reference to the PID is in motor rotations, but all the gains and feed forward are normalized
     // to 1 = max, -1 = min
-    double worm_kP = 0.000185;
+    double worm_kP = 0.000405;
     double worm_kI = 0.000000007;
     double worm_kD = 0.0;
     double worm_kFF = 0.00;
     double wormMaxVel = 5200; // rpm  
     double wormMaxAcc = 4000; //rpm/sec
+    //max motor speed is 5676 RPM. This number gets multiplied by current speed
+    // and added to the current position to have a softer stop. The first number
+    // in the equation is a distance in inches that will be added / subtracted at max speed.
+    double wormDistMult = 0.5 * ArmConstants.WormMotorRotationsPerInch / 5676;
 
-    double extend_kP = 0.0002;
+    double extend_kP = 0.0003;
     double extend_kI = 0.00000007;
     double extend_kD = 0.0;
     double extend_kFF = 0.00;
     double extendMaxVel = 4000; // rpm  
     double extendMaxAcc = 2000; //rpm/sec
+    double extendDistMult = 0.5 * ArmConstants.ExtendMotorRotationsPerInch / 5676;
 
     double claw_kP = 0.0003;
     double claw_kI = 0.000000;
@@ -173,7 +178,9 @@ public class ArmSubsystem extends SubsystemBase {
         }
         else if (!wormFreezeSet)//hold the last position
         {
-            wormPosRef = wormEncoder.getPosition();
+            //add or subtract from the current position a number porportional to current speed.
+            double slowDownArea = wormEncoder.getVelocity() * wormDistMult;
+            wormPosRef = wormEncoder.getPosition() + slowDownArea;
             wormFreezeSet = true;
         }
     }
@@ -199,7 +206,9 @@ public class ArmSubsystem extends SubsystemBase {
         }
         else if (!extendFreezeSet)//hold the last position
         {
-            extendPosRef = extendEncoder.getPosition();
+            //add or subtract from the current position a number porportional to current speed.
+            double slowDownArea = extendEncoder.getVelocity() * extendDistMult;
+            extendPosRef = extendEncoder.getPosition() + slowDownArea;
             extendFreezeSet = true;
         }
     }
