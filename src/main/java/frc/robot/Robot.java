@@ -221,7 +221,7 @@ public class Robot extends TimedRobot {
       setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(), new Rotation2d()), true);
       setPos.schedule();
     }
-    if(drivestick.getRawButtonPressed(9)) {
+    if(drivestick.getRawButtonPressed(9) && setPos != null) {
       setPos.cancel();
     }
   }

@@ -16,7 +16,7 @@ public class VisionSubsystem extends SubsystemBase {
     public VisionSubsystem(DriveTrainSubsystemRick drive) {
         defaultTag[0] = -1;
         this.drive = drive;
-        for(int i = 0; i < 8; i++) {
+        for(int i = 1; i < 9; i++) {
             SmartDashboard.putNumberArray("aprilTag" + i, new double[]{0, 0, 0, 0});
         }
     }
@@ -29,7 +29,7 @@ public class VisionSubsystem extends SubsystemBase {
     // Set the tag of interest
     public void setTag(int tag) {
         tagOfInterest = tag;
-        SmartDashboard.putNumber("wantedTag", tagOfInterest);
+        SmartDashboard.putNumber("wantedTag", (int)tagOfInterest);
     }
 
     // Check for the tag, return true if found

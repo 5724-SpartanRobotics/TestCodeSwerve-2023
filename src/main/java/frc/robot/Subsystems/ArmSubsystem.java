@@ -174,13 +174,13 @@ public class ArmSubsystem extends SubsystemBase {
     public void wormIncremental(boolean raise, boolean larger){
         double increment = larger ? ArmConstants.WormPositionPlaceConeIncrement : ArmConstants.WormPositionIncrement;
         if (raise)
-            wormPosRef += (increment * ArmConstants.ExtendMotorRotationsPerInch);
+            wormPosRef += (increment * ArmConstants.WormMotorRotationsPerInch);
         else
-            wormPosRef -= (increment * ArmConstants.ExtendMotorRotationsPerInch);
-        double raisedAndThenSome = ArmConstants.ExtendPositionMax + ArmConstants.WormPositionIncrement;
+            wormPosRef -= (increment * ArmConstants.WormMotorRotationsPerInch);
+        double raisedAndThenSome = (ArmConstants.WormPositionMax + ArmConstants.WormPositionIncrement) * ArmConstants.WormMotorRotationsPerInch;
         if (wormPosRef > raisedAndThenSome)
             wormPosRef = raisedAndThenSome;
-        else if (wormPosRef < ArmConstants.ExtendPositionMin)
+        else if (wormPosRef < (ArmConstants.WormPositionMin * ArmConstants.WormMotorRotationsPerInch))
             wormPosRef = ArmConstants.ExtendPositionMin;
     }
 
@@ -188,14 +188,14 @@ public class ArmSubsystem extends SubsystemBase {
      * Sets the worm position reference to maximum up
      */
     public void wormFullUp(){
-        wormPosRef = ArmConstants.WormPositionMax;
+        wormPosRef = ArmConstants.WormPositionMax * ArmConstants.WormMotorRotationsPerInch;
     }
 
     /**
      * Sets the worm position reference to minimum down.
      */
     public void wormFullDown(){
-        wormPosRef = ArmConstants.WormPositionMin;
+        wormPosRef = ArmConstants.WormPositionMin * ArmConstants.WormMotorRotationsPerInch;
     }
 
 
@@ -213,9 +213,9 @@ public class ArmSubsystem extends SubsystemBase {
             extendPosRef += (ArmConstants.ExtendPositionIncrement * ArmConstants.ExtendMotorRotationsPerInch);
         else
             extendPosRef -= (ArmConstants.ExtendPositionIncrement * ArmConstants.ExtendMotorRotationsPerInch);
-        if (extendPosRef > ArmConstants.ExtendPositionMax)
+        if (extendPosRef > ArmConstants.ExtendPositionMax * ArmConstants.ExtendMotorRotationsPerInch)
             extendPosRef = ArmConstants.ExtendPositionMax;
-        else if (extendPosRef < ArmConstants.ExtendPositionMin)
+        else if (extendPosRef < ArmConstants.ExtendPositionMin * ArmConstants.ExtendMotorRotationsPerInch)
             extendPosRef = ArmConstants.ExtendPositionMin;
     }
 
@@ -223,14 +223,14 @@ public class ArmSubsystem extends SubsystemBase {
      * Sets the extend position reference to maximum out.
      */
     public void extendFullOut(){
-        extendPosRef = ArmConstants.ExtendPositionMax;
+        extendPosRef = ArmConstants.ExtendPositionMax * ArmConstants.ExtendMotorRotationsPerInch;
     }
 
     /**
      * Sets the extend position reference to minimum in.
      */
     public void extendFullIn(){
-        extendPosRef = ArmConstants.ExtendPositionMin;
+        extendPosRef = ArmConstants.ExtendPositionMin * ArmConstants.ExtendMotorRotationsPerInch;
     }
 
     private void sendWormRefToPidController() {
