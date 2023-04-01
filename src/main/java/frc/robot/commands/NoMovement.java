@@ -25,21 +25,20 @@ public class NoMovement extends SequentialCommandGroup {
                 new InstantCommand(() -> {
                     drive.setFlag();
                     arm.zoop(-0.5 * ArmConstants.ClawMaxPercent * 6000);
-                    arm.driveRotation(1);
+                    arm.wormFullUp();
                     System.out.println("running arm");
                 }, arm),
                 new WaitCommand(2.5),
                 new InstantCommand(() -> {
-                    arm.driveExtension(1);
+                    arm.extendFullOut();
                 }),
                 new WaitCommand(3),
                 new InstantCommand(() -> {
-                    arm.driveRotation(-1);
+                    arm.wormIncremental(false, true);
                 }),
                 new WaitCommand(1),
                 new InstantCommand(() -> {
-                    arm.driveRotation(0);
-                    arm.driveExtension(-1);
+                    arm.extendFullIn();
                     arm.zoop(0.5 * ArmConstants.ClawMaxPercent * 6000);
                 })
             )
