@@ -80,6 +80,7 @@ public class Robot extends TimedRobot {
   private double m = -5;
   private double b = 3;
   private double maxturn = 0.5;
+  private Command setPos;
 
   private Joystick drivestick = new Joystick(0);
   private XboxController operator = new XboxController(1);
@@ -190,10 +191,12 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    Command setPos;
-    if(drivestick.getRawButton(8)) {
+    if(drivestick.getRawButton(7)) {
       setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(), new Rotation2d()), true);
       setPos.schedule();
+    }
+    if(drivestick.getRawButton(9)) {
+      setPos.cancel();
     }
   }
 

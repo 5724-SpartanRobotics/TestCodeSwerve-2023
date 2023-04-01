@@ -185,6 +185,8 @@ public class ArmSubsystem extends SubsystemBase {
         {
             //add or subtract from the current position a number porportional to current speed.
             double slowDownArea = wormEncoder.getVelocity() * wormDistMult;
+            if (DebugSetting.TraceLevel == DebugLevel.Arm)
+                SmartDashboard.putNumber("WormSlowDownPos", slowDownArea);
             wormPosRef = wormEncoder.getPosition() + slowDownArea;
             wormFreezeSet = true;
         }
@@ -213,6 +215,8 @@ public class ArmSubsystem extends SubsystemBase {
         {
             //add or subtract from the current position a number porportional to current speed.
             double slowDownArea = extendEncoder.getVelocity() * extendDistMult;
+            if (DebugSetting.TraceLevel == DebugLevel.Arm)
+                SmartDashboard.putNumber("ExtendSlowDownPos", slowDownArea);
             extendPosRef = extendEncoder.getPosition() + slowDownArea;
             extendFreezeSet = true;
         }

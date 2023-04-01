@@ -68,9 +68,9 @@ public class TeleopSwerve extends CommandBase {
         } else {
             zAxis = -controller.getZ() / 2;
         }
-        if(controller.getRawButton(7)) {
-            swerveDrive.setGyroZero();
-        }
+        // if(controller.getRawButton(7)) {
+        //     swerveDrive.setGyroZero();
+        // }
         // Power Array Auto Align Code
         // Conditional is a check for having a combination of buttons pressed
         if((controller.getRawButton(7) || controller.getRawButton(9) || 

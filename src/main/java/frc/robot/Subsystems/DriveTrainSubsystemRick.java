@@ -96,6 +96,9 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
 
         @Override
         public void periodic(){
+            SmartDashboard.putNumber("Xpos", -getPose().getX());
+            SmartDashboard.putNumber("Ypos", -getPose().getY());
+            SmartDashboard.putNumber("Zpos", -getPose().getRotation().getRadians());
             SmartDashboard.putNumber("roll", gyro.getRoll());
             SmartDashboard.putNumber("pitch", gyro.getPitch());
             //the gyro getGyroAngleY returns positive values as the robot turns clockwise. We want negative for clockwise

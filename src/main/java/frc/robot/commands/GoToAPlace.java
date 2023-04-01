@@ -60,9 +60,9 @@ public class GoToAPlace extends CommandBase {
     // double vy = yController.calculate(-currentPose.getY(), dt) - refState.velocity.y;
     // double omega = -thetaController.calculate(-currentPose.getRotation().getRadians(), dt) + refState.velocity.z;
 
-    // SmartDashboard.putNumber("Xpos", -currentPose.getX());
-    // SmartDashboard.putNumber("Ypos", -currentPose.getY());
-    // SmartDashboard.putNumber("Zpos", -currentPose.getRotation().getRadians());
+    SmartDashboard.putNumber("Xpos", -currentPose.getX());
+    SmartDashboard.putNumber("Ypos", -currentPose.getY());
+    SmartDashboard.putNumber("Zpos", -currentPose.getRotation().getRadians());
 
     double vx = -xController.calculate(-currentPose.getX(), dt);
     double vy = -yController.calculate(-currentPose.getY(), dt);
@@ -75,10 +75,14 @@ public class GoToAPlace extends CommandBase {
 
     drive.drive(new Translation2d(-vx, -vy), omega);
     lastTime = time;
+    if(isFinished()) {
+      end(true);
+    }
   }
 
   @Override
   public void end(boolean interrupted) {
+    timer.stop();
     drive.brake();
   }
 
