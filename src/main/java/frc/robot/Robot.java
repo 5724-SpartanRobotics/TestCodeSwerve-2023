@@ -40,6 +40,7 @@ import frc.robot.Subsystems.DriveTrainSubsystem;
 import frc.robot.Subsystems.DriveTrainSubsystemRick;
 import frc.robot.Subsystems.Field;
 import frc.robot.Subsystems.LedSubsystem;
+import frc.robot.Subsystems.VisionSubsystem;
 import frc.robot.commands.ArmControl;
 import frc.robot.commands.GoToAPlace;
 import frc.robot.commands.TeleopSwerve;
@@ -63,6 +64,8 @@ import edu.wpi.first.cscore.UsbCamera;
  * project.
  */
 public class Robot extends TimedRobot {
+  private double selectionPhase;
+  private double poseFinder;
   private boolean wasAutoFlag;
   private TrajectoriesManager trajectoriesManager = new TrajectoriesManager(new File(Filesystem.getDeployDirectory(), "trajectories/"));
   private static final String kDefaultAuto = "Default";
@@ -72,7 +75,7 @@ public class Robot extends TimedRobot {
   //private DriveTrainSubsystem drive;
   private DriveTrainSubsystemRick drive;
   private ArmSubsystem arm;
-
+  private VisionSubsystem vision;
   private Field field = new Field(drive);
 
   private double dif = 0;
@@ -98,6 +101,7 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
+    poseFinder = 0;
     CameraServer.startAutomaticCapture();
     UsbCamera cam2 = CameraServer.startAutomaticCapture();
     System.out.println(Filesystem.getDeployDirectory());
@@ -130,6 +134,8 @@ public class Robot extends TimedRobot {
     //  drive.setDefaultCommand(new RunCommand(() -> {
       
     //  }, drive));
+    vision = new VisionSubsystem(drive);
+    selectionPhase = 0;
   }
 
   /**
@@ -191,11 +197,31 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if(drivestick.getRawButton(7)) {
+    if(drivestick.getRawButtonPressed(8) && selectionPhase == 0) {
+      poseFinder = 1;
+      // TODO red vs blue
+      vision.setTag(1);
+    } else if(drivestick.getRawButtonPressed(10) && selectionPhase == 0) {
+      poseFinder = 1;
+      vision.setTag(2);
+    } else if(drivestick.getRawButtonPressed(12) && selectionPhase == 0) {
+      poseFinder = 1;
+      vision.setTag(3);
+    }
+
+    // If we see it, set the pose
+    if(poseFinder != 0 && vision.foundTag()) {
+      drive.ZeroDriveSensors(vision.getSetPose());
+    }
+    // Cancel on button 7
+    if(drivestick.getRawButtonPressed(7) || drivestick.getRawButtonPressed(7)) {
+      poseFinder = 0;
+    }
+    if(drivestick.getRawButtonPressed(7)) {
       setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(), new Rotation2d()), true);
       setPos.schedule();
     }
-    if(drivestick.getRawButton(9)) {
+    if(drivestick.getRawButtonPressed(9)) {
       setPos.cancel();
     }
   }
