@@ -164,62 +164,73 @@ public class ArmSubsystem extends SubsystemBase {
         sendExtendPosToPidController();
         sendWormRefToPidController();
     }
-     /**
-     * -1 = Jog worm reverse, 1 = forward
-     * 0 = freeze the worm the first time after a forward or reverse
-     * @param speed
-     */
-    public void driveRotation(double speed) {
-        if (speed > 0)
-        {
 
-            wormPosRef = ArmConstants.WormPositionMax * ArmConstants.WormMotorRotationsPerInch;
-            wormFreezeSet = false;
-        }
-        else if (speed < 0)
-        {
-            wormPosRef = ArmConstants.WormPositionMin * ArmConstants.WormMotorRotationsPerInch;
-            wormFreezeSet = false;
-        }
-        else if (!wormFreezeSet)//hold the last position
-        {
-            //add or subtract from the current position a number porportional to current speed.
-            double slowDownArea = wormEncoder.getVelocity() * wormDistMult;
-            if (DebugSetting.TraceLevel == DebugLevel.Arm)
-                SmartDashboard.putNumber("WormSlowDownPos", slowDownArea);
-            wormPosRef = wormEncoder.getPosition() + slowDownArea;
-            wormFreezeSet = true;
-        }
+    /**
+     * Change the worm position by an incremental amount. Once the maximum extend is reached
+     * the increment will only have a single increment allowed, to allow them to raise just a bit
+     * more.
+     * @param raise True to raise an incremental amount, false to lower an incremental amount
+     */
+    public void wormIncremental(boolean raise, boolean larger){
+        double increment = larger ? ArmConstants.WormPositionPlaceConeIncrement : ArmConstants.WormPositionIncrement;
+        if (raise)
+            wormPosRef += (increment * ArmConstants.ExtendMotorRotationsPerInch);
+        else
+            wormPosRef -= (increment * ArmConstants.ExtendMotorRotationsPerInch);
+        double raisedAndThenSome = ArmConstants.ExtendPositionMax + ArmConstants.WormPositionIncrement;
+        if (wormPosRef > raisedAndThenSome)
+            wormPosRef = raisedAndThenSome;
+        else if (wormPosRef < ArmConstants.ExtendPositionMin)
+            wormPosRef = ArmConstants.ExtendPositionMin;
     }
+
+    /**
+     * Sets the worm position reference to maximum up
+     */
+    public void wormFullUp(){
+        wormPosRef = ArmConstants.WormPositionMax;
+    }
+
+    /**
+     * Sets the worm position reference to minimum down.
+     */
+    public void wormFullDown(){
+        wormPosRef = ArmConstants.WormPositionMin;
+    }
+
 
     private void sendExtendPosToPidController() {
         extendPidControl.setReference(extendPosRef, ControlType.kSmartMotion);
     }
+
     /**
-     * -1 = Jog telescoping reverse, 1 = forward
-     * 0 = freeze the telescoping the first time after a forward or reverse
-     * @param speed
+     * Change the Extend position by an incremental amount. The position is limited to maximum extend and
+     * minimum extend.
+     * @param extend True to extend an incremental amount, false to retract an incremental amount
      */
-    public void driveExtension(double speed) {
-        if (speed > 0)
-        {
-            extendPosRef = ArmConstants.ExtendPositionMax * ArmConstants.ExtendMotorRotationsPerInch;
-            extendFreezeSet = false;
-        }
-        else if (speed < 0)
-        {
-            extendPosRef = ArmConstants.ExtendPositionMin * ArmConstants.ExtendMotorRotationsPerInch;
-            extendFreezeSet = false;
-        }
-        else if (!extendFreezeSet)//hold the last position
-        {
-            //add or subtract from the current position a number porportional to current speed.
-            double slowDownArea = extendEncoder.getVelocity() * extendDistMult;
-            if (DebugSetting.TraceLevel == DebugLevel.Arm)
-                SmartDashboard.putNumber("ExtendSlowDownPos", slowDownArea);
-            extendPosRef = extendEncoder.getPosition() + slowDownArea;
-            extendFreezeSet = true;
-        }
+    public void extendIncremental(boolean extend){
+        if (extend)
+            extendPosRef += (ArmConstants.ExtendPositionIncrement * ArmConstants.ExtendMotorRotationsPerInch);
+        else
+            extendPosRef -= (ArmConstants.ExtendPositionIncrement * ArmConstants.ExtendMotorRotationsPerInch);
+        if (extendPosRef > ArmConstants.ExtendPositionMax)
+            extendPosRef = ArmConstants.ExtendPositionMax;
+        else if (extendPosRef < ArmConstants.ExtendPositionMin)
+            extendPosRef = ArmConstants.ExtendPositionMin;
+    }
+
+    /**
+     * Sets the extend position reference to maximum out.
+     */
+    public void extendFullOut(){
+        extendPosRef = ArmConstants.ExtendPositionMax;
+    }
+
+    /**
+     * Sets the extend position reference to minimum in.
+     */
+    public void extendFullIn(){
+        extendPosRef = ArmConstants.ExtendPositionMin;
     }
 
     private void sendWormRefToPidController() {

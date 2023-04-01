@@ -23,21 +23,20 @@ public class RightAuto extends SequentialCommandGroup {
             new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     arm.zoop(-0.5 * ArmConstants.ClawMaxPercent * 6000);
-                    arm.driveRotation(1);
+                    arm.wormFullUp();
                     System.out.println("running arm");
                 }, arm),
                 new WaitCommand(2.5),
                 new InstantCommand(() -> {
-                    arm.driveExtension(1);
+                    arm.extendFullOut();
                 }),
                 new WaitCommand(3),
                 new InstantCommand(() -> {
-                    arm.driveRotation(-1);
+                    arm.wormIncremental(false, true);
                 }),
                 new WaitCommand(1),
                 new InstantCommand(() -> {
-                    arm.driveRotation(0);
-                    arm.driveExtension(-1);
+                    arm.extendFullIn();
                     arm.zoop(0.5 * ArmConstants.ClawMaxPercent * 6000);
                 }),
                 new ParallelDeadlineGroup(
@@ -56,11 +55,8 @@ public class RightAuto extends SequentialCommandGroup {
                         }),
                         new WaitCommand(3),
                         new InstantCommand(() -> {
-                            arm.driveExtension(-1);
-                        }),
-                        new InstantCommand(() -> {
-                            arm.driveRotation(1);
-                            arm.driveExtension(1);
+                            arm.wormFullUp();
+                            arm.extendFullOut();
                         }),
                         new WaitCommand(3.3),
                         new InstantCommand(() -> {

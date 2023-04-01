@@ -27,36 +27,45 @@ public class ArmControl extends CommandBase {
         if (!RobotState.isTeleop())
            return;
         if(controller.getLeftBumper()) {
-            //jog retract
-            arm.driveExtension(-1);
+            //retract incremental
+            arm.extendIncremental(true);
         } else if(controller.getRightBumper()) {
-            //jog extend
-            arm.driveExtension(1);
+            //extend incremental
+            arm.extendIncremental(false);
         } else if (controller.getXButton()) {
             //Set extend position to front pole
             arm.frontExtendPos();
         } else if (controller.getYButton()) {
             arm.extendIntakePos();
-        } else {
-            //stop jog
-            arm.driveExtension(0);
+        } else if (controller.getRightY() > 0.5){
+            //go to full out position
+            arm.extendFullOut();
+        }
+        else if (controller.getRightY() < -0.5){
+            arm.extendFullIn();
         }
         //getPOV returns an angle for the POV control. Upper button is 0 and the degrees are positive 
         // for the clockwise direction. It has a value of -1 for nothing pressed.
         if(controller.getPOV() == 180) {
-            //jog worm down
-            arm.driveRotation(-1);
+            //worm down incremental
+            arm.wormIncremental(false, false);
         } else if(controller.getPOV() == 0) {
-            //jog worm up
-            arm.driveRotation(1);
+            //worm up incremental
+            arm.wormIncremental(true, false);
+        } else if (controller.getPOV() == 90){
+            arm.wormIncremental(true, true);
+        } else if (controller.getPOV() == 270){
+            arm.wormIncremental(false, true);
         } else if (controller.getAButton()) {
             //Set hoist position to front pole height
             arm.frontHoistPos();
         } else if (controller.getBButton()) {
             arm.wormIntakePos();
-        } else {
-            //stop jog. 
-            arm.driveRotation(0);
+        } else if (controller.getLeftY() > 0.5) {
+            arm.wormFullUp();
+        }
+        else if (controller.getLeftY() < -0.5){
+            arm.wormFullDown();
         }
         //set the claw motor speed
         arm.zoop((controller.getRightTriggerAxis() - controller.getLeftTriggerAxis()) * ArmConstants.ClawMaxPercent * 6000);
