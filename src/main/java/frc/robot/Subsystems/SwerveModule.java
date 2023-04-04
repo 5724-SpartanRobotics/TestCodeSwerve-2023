@@ -159,8 +159,8 @@ public class SwerveModule {
         SmartDashboard.putNumber("turn", dashboardTurnSetpoint);
               // Set the turn
         // turn.set(maxturn * dif / Math.abs(dif) / (1 + Math.pow(Math.E, (m * Math.abs(dif) + b))));
-        System.out.println(turnID);
-        System.out.println((requestedAngle) / (Math.PI * 4) * 4096 * 150 / 7);
+       // System.out.println(turnID);
+        //System.out.println((requestedAngle) / (Math.PI * 4) * 4096 * 150 / 7);
     }
 
     // Takes x, y vector on desired robot direction

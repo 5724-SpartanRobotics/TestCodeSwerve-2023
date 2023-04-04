@@ -26,7 +26,7 @@ public class ParkAuto extends SequentialCommandGroup {
                     drive.setFlag();
                     arm.zoop(-0.5 * ArmConstants.ClawMaxPercent * 6000);
                     arm.wormFullUp();
-                    System.out.println("running arm");
+                    //System.out.println("running arm");
                 }, arm),
                 new WaitCommand(2),
                 new InstantCommand(() -> {

@@ -108,7 +108,7 @@ public class Robot extends TimedRobot {
     poseFinder = 0;
     CameraServer.startAutomaticCapture();
     UsbCamera cam2 = CameraServer.startAutomaticCapture();
-    System.out.println(Filesystem.getDeployDirectory());
+    //System.out.println(Filesystem.getDeployDirectory());
     trajectoriesManager.loadAllTrajectories();
     //if using rick's subsystem uncoment these
     drive = new DriveTrainSubsystemRick();
@@ -182,7 +182,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("rotationAuto", 0);
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    //System.out.println("Auto selected: " + m_autoSelected);
     m_chooser.getSelected().schedule();
     CommandScheduler.getInstance().run();
   }
@@ -229,17 +229,17 @@ public class Robot extends TimedRobot {
     }
     if(selectionPhase == 1 && drivestick.getRawButtonPressed(8)) {
       setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(-0.4, 0.6), new Rotation2d(3.14)), true);
-      System.out.println(":)");
+      //System.out.println(":)");
       poseFinder = 0;
       selectionPhase = 0;
     } else if(selectionPhase == 1 && drivestick.getRawButtonPressed(10)) {
       setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(-0.4, 0), new Rotation2d(3.14)), true);
-      System.out.println(":)");
+      //System.out.println(":)");
       poseFinder = 0;
       selectionPhase = 0;
     } else if(selectionPhase == 1 && drivestick.getRawButtonPressed(12)) {
       setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(-0.4, -0.7), new Rotation2d(3.14)), true);
-      System.out.println(":)");
+      //System.out.println(":)");
       poseFinder = 0;
       selectionPhase = 0;
     }

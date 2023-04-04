@@ -24,7 +24,7 @@ public class BlueBump2Piece extends SequentialCommandGroup {
                 new InstantCommand(() -> {
                     arm.zoop(-0.5 * ArmConstants.ClawMaxPercent * 6000);
                     arm.wormFullUp();
-                    System.out.println("running arm");
+                    //System.out.println("running arm");
                 }, arm),
                 new WaitCommand(2),
                 new InstantCommand(() -> {
@@ -48,7 +48,7 @@ public class BlueBump2Piece extends SequentialCommandGroup {
                     new SequentialCommandGroup(
                         new WaitCommand(0.5),
                         new InstantCommand(() -> {
-                            System.out.println(":)");
+                            //System.out.println(":)");
                             arm.wormIntakePos();
                         }),
                         new WaitCommand(1.5),

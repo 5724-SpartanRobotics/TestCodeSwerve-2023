@@ -38,7 +38,7 @@ public class TrajectoryFollower extends CommandBase {
   @Override
   public void initialize() {
     initPose = trajectory.getInitialPose();
-    System.out.println("Init :)");
+    //System.out.println("Init :)");
     drive.ZeroDriveSensors(new Pose2d(new Translation2d(initPose.getX(), initPose.getY() * inverted), initPose.getRotation()));
     timer.reset();
     timer.start();

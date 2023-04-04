@@ -77,9 +77,9 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             // RB.ZeroDriveSensor();
             // LB.ZeroDriveSensor();
             //zero the robot pose
-            System.out.println("old pose " + swerveDriveOdometry.getPoseMeters().getX() + ", " + swerveDriveOdometry.getPoseMeters().getY());
+            //System.out.println("old pose " + swerveDriveOdometry.getPoseMeters().getX() + ", " + swerveDriveOdometry.getPoseMeters().getY());
             swerveDriveOdometry.resetPosition(lastUpdatedGyroHeading, new SwerveModulePosition[] {LF.getPosition(), RF.getPosition(), LB.getPosition(), RB.getPosition()}, xy.times(-1));
-            System.out.println("new pose " + swerveDriveOdometry.getPoseMeters().getX() + ", " + swerveDriveOdometry.getPoseMeters().getY());
+            //System.out.println("new pose " + swerveDriveOdometry.getPoseMeters().getX() + ", " + swerveDriveOdometry.getPoseMeters().getY());
         }
 
         // Used by helixnavigator
@@ -179,16 +179,16 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             if(doneFlag) {
 
             } else if(Math.abs(gyro.getRoll()) < 11.9 && parkFlag){
-                System.out.println("up");
+                //System.out.println("up");
                 this.drive(new Translation2d(0, 0.1), 0);
                 doneFlag = true;
             }else if(Math.abs(gyro.getRoll()) > 12.1) {
                 this.drive(new Translation2d(0.8, 0), 0);
-                System.out.println("flag");
+                //System.out.println("flag");
                 parkFlag = true;
             } else {
                 this.drive(new Translation2d(2, 0), 0);
-                System.out.println("back");
+                //System.out.println("back");
             }
         }
 }
