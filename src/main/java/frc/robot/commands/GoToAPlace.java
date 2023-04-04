@@ -37,9 +37,9 @@ public class GoToAPlace extends CommandBase {
   @Override
   public void initialize() {
     
-    xController = new PIDController(AutoConstants.kPTranslationController / 30, 0, 0);
-    yController = new PIDController(AutoConstants.kPTranslationController / 30, 0, 0);
-    thetaController = new PIDController(AutoConstants.kPThetaController / 30, 0, 0);
+    xController = new PIDController(AutoConstants.kPTranslationController / 3, 0, 0);
+    yController = new PIDController(AutoConstants.kPTranslationController / 3, 0, 0);
+    thetaController = new PIDController(AutoConstants.kPThetaController * 2, 0, 0);
     thetaController.setContinous(true);
     thetaController.setInputRange(Math.PI * 2);
 
@@ -73,7 +73,18 @@ public class GoToAPlace extends CommandBase {
     // SmartDashboard.putNumber("vyauto", vy);
     // SmartDashboard.putNumber("omegaauto", omega);
 
-    drive.drive(new Translation2d(-vx, -vy), omega);
+    if(vx > 1) {
+      vx = 1;
+    } else if (vx < -1) {
+      vx = -1;
+    }
+    if(vy > 1) {
+      vy = 1;
+    } else if (vy < -1) {
+      vy = -1;
+    }
+
+    drive.drive(new Translation2d(vx, vy), omega);
     lastTime = time;
     if(isFinished()) {
       end(true);

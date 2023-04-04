@@ -63,7 +63,7 @@ public class Constant {
         public static final double ExtendMotorRotationsPerInch = 3.8197;//Spool size is 1" circumfrence is pi, therefore 1/pi spool rotations = 1 inch. Gear box is 12:1.
         public static final int ExtendMotor = 13;
         public static final double ExtendPositionMax = 20; //inches
-        public static final double ExtendPositionIntake = 8.64;
+        public static final double ExtendPositionIntake = 7.64;
         public static final double ExtendPositionMin = 0; //inches
         public static final double ExtendMidRung = 7.07;
         public static final double ExtendFunkyConeDrop = 18;

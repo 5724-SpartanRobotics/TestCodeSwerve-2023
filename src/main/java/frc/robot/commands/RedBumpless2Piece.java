@@ -16,8 +16,8 @@ import frc.robot.commands.HelixAutoTools.TrajectoriesManager;
 import frc.robot.commands.HelixAutoTools.TrajectoryFollower;
 import frc.robot.commands.HelixAutoTools.Paths.Path;
 
-public class LeftAuto extends SequentialCommandGroup {
-    public LeftAuto(DriveTrainSubsystemRick drive, ArmSubsystem arm, TrajectoriesManager trajectoriesManager) {
+public class RedBumpless2Piece extends SequentialCommandGroup {
+    public RedBumpless2Piece(DriveTrainSubsystemRick drive, ArmSubsystem arm, TrajectoriesManager trajectoriesManager) {
         Path pathing = trajectoriesManager.loadTrajectory("2PieceQuestionable");
         addCommands(
             new SequentialCommandGroup(
@@ -26,23 +26,25 @@ public class LeftAuto extends SequentialCommandGroup {
                     arm.wormFullUp();
                     System.out.println("running arm");
                 }, arm),
-                new WaitCommand(2.5),
+                new WaitCommand(2),
                 new InstantCommand(() -> {
                     arm.extendFullOut();
+                    arm.wormIncremental(true, false);
                 }),
-                new WaitCommand(3),
+                new WaitCommand(1.2),
                 new InstantCommand(() -> {
                     //place the cone
+                    arm.wormFullUp();
                     arm.wormIncremental(false, true);
                 }),
-                new WaitCommand(1),
+                new WaitCommand(1.3),
                 new InstantCommand(() -> {
                     arm.extendFullIn();
-                    arm.zoop(0.5 * ArmConstants.ClawMaxPercent * 6000);
+                    arm.zoop(0.3 * ArmConstants.ClawMaxPercent * 6000);
                 }),
                 new ParallelDeadlineGroup(
                     new WaitCommand(20),
-                    new TrajectoryFollower(drive, pathing, true),
+                    new TrajectoryFollower(drive, pathing, false),
                     new SequentialCommandGroup(
                         new WaitCommand(0.5),
                         new InstantCommand(() -> {
@@ -57,7 +59,7 @@ public class LeftAuto extends SequentialCommandGroup {
                         new WaitCommand(3),
                         new InstantCommand(() -> {
                             arm.wormFullUp();
-                            arm.extendFullOut();;
+                            arm.extendFullOut();
                         }),
                         new WaitCommand(3.3),
                         new InstantCommand(() -> {

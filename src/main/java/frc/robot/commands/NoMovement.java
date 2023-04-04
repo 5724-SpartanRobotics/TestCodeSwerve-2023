@@ -31,10 +31,12 @@ public class NoMovement extends SequentialCommandGroup {
                 new WaitCommand(2.5),
                 new InstantCommand(() -> {
                     arm.extendFullOut();
+                    arm.wormIncremental(true, false);
                 }),
                 new WaitCommand(3),
                 new InstantCommand(() -> {
                     arm.wormIncremental(false, true);
+                    arm.wormIncremental(false, false);
                 }),
                 new WaitCommand(1),
                 new InstantCommand(() -> {

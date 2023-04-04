@@ -183,11 +183,11 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
                 this.drive(new Translation2d(0, 0.1), 0);
                 doneFlag = true;
             }else if(Math.abs(gyro.getRoll()) > 12.1) {
-                this.drive(new Translation2d(-0.8, 0), 0);
+                this.drive(new Translation2d(0.8, 0), 0);
                 System.out.println("flag");
                 parkFlag = true;
             } else {
-                this.drive(new Translation2d(-2, 0), 0);
+                this.drive(new Translation2d(2, 0), 0);
                 System.out.println("back");
             }
         }

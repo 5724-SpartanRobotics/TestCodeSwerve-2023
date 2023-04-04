@@ -3,6 +3,7 @@ package frc.robot.Subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -46,11 +47,11 @@ public class VisionSubsystem extends SubsystemBase {
     }
     
     public Pose2d getSetPose() {
-        double camPoseX = Math.cos(Math.toRadians(tagValues[1] + drive.getGyroHeading().getDegrees())) * tagValues[0];
-        double camPoseY = Math.sin(Math.toRadians(tagValues[1] + drive.getGyroHeading().getDegrees())) * tagValues[0];
+        double camPoseX = Math.cos(Math.toRadians(tagValues[1] / 2 + drive.getGyroHeading().getDegrees())) * Units.feetToMeters(tagValues[0]);
+        double camPoseY = -Math.sin(Math.toRadians(tagValues[1] / 2 + drive.getGyroHeading().getDegrees())) * Units.feetToMeters(tagValues[0]) + 0.17; // TODO make this less jank please
         SmartDashboard.putNumber("camToTagX", camPoseX);
         SmartDashboard.putNumber("camToTagY", camPoseY);
-        return new Pose2d(new Translation2d(camPoseX, camPoseY), new Rotation2d());
+        return new Pose2d(new Translation2d(camPoseX, camPoseY), new Rotation2d(drive.getGyroHeading().getRadians()));
     }
 
     public void cancel() {
