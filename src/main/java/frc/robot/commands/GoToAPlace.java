@@ -20,26 +20,24 @@ public class GoToAPlace extends CommandBase {
   private PIDController xController, yController, thetaController;
   private double lastTime = 0;
   private Timer timer = new Timer();
-  private int inverted = 1;
-  private Pose2d refState;
+  private Pose2d initPose;
+  private Pose2d targetPose;
 
-  public GoToAPlace(DriveTrainSubsystemRick drive, Pose2d refState, boolean invertedState) {
+  public GoToAPlace(DriveTrainSubsystemRick drive, Pose2d target) {
     addRequirements(drive);
     this.drive = drive;
-    this.refState = refState;
-    if(invertedState) {
-      this.inverted = -1;
-    } else {
-      this.inverted = 1;
-    }
+    this.targetPose = target;
   }
 
   @Override
   public void initialize() {
+    initPose = drive.getPose();
+    timer.reset();
+    timer.start();
     
-    xController = new PIDController(AutoConstants.kPTranslationController / 3, 0, 0);
-    yController = new PIDController(AutoConstants.kPTranslationController / 3, 0, 0);
-    thetaController = new PIDController(AutoConstants.kPThetaController * 2, 0, 0);
+    xController = new PIDController(AutoConstants.kPTranslationController, 0, 0);
+    yController = new PIDController(AutoConstants.kPTranslationController, 0, 0);
+    thetaController = new PIDController(AutoConstants.kPThetaController * 1.5, 0.5, 0);
     thetaController.setContinous(true);
     thetaController.setInputRange(Math.PI * 2);
 
@@ -52,43 +50,21 @@ public class GoToAPlace extends CommandBase {
     double dt = time - lastTime;
     Pose2d currentPose = drive.getPose();
 
-    xController.setReference(refState.getX());
-    yController.setReference(inverted * refState.getY());
-    thetaController.setReference(-refState.getRotation().getRadians() * inverted);
+    // xController.setReference(-refState.pose.getX());
+    // yController.setReference(-refState.pose.getY());
+    thetaController.setReference(-targetPose.getRotation().getRadians());
 
     // double vx = xController.calculate(-currentPose.getX(), dt) - refState.velocity.x;
     // double vy = yController.calculate(-currentPose.getY(), dt) - refState.velocity.y;
     // double omega = -thetaController.calculate(-currentPose.getRotation().getRadians(), dt) + refState.velocity.z;
 
-    SmartDashboard.putNumber("Xpos", -currentPose.getX());
-    SmartDashboard.putNumber("Ypos", -currentPose.getY());
-    SmartDashboard.putNumber("Zpos", -currentPose.getRotation().getRadians());
-
-    double vx = -xController.calculate(-currentPose.getX(), dt);
-    double vy = -yController.calculate(-currentPose.getY(), dt);
+    // double vx = -xController.calculate(currentPose.getX(), dt);
+    // double vy = -yController.calculate(currentPose.getY(), dt);
     double omega = -thetaController.calculate(-currentPose.getRotation().getRadians(), dt);
 
-    // SmartDashboard.putNumber("AutoTime", dt);
-    // SmartDashboard.putNumber("vxauto", vx);
-    // SmartDashboard.putNumber("vyauto", vy);
-    // SmartDashboard.putNumber("omegaauto", omega);
-
-    if(vx > 1) {
-      vx = 1;
-    } else if (vx < -1) {
-      vx = -1;
-    }
-    if(vy > 1) {
-      vy = 1;
-    } else if (vy < -1) {
-      vy = -1;
-    }
-
-    drive.drive(new Translation2d(vx, vy), omega);
+    // Very dumb fix, should be x,y
+    drive.drive(new Translation2d(0, 0), omega);
     lastTime = time;
-    if(isFinished()) {
-      end(true);
-    }
   }
 
   @Override

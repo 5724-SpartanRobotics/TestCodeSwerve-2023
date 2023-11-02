@@ -45,7 +45,7 @@ public class ArmSubsystem extends SubsystemBase {
     // in the equation is a distance in inches that will be added / subtracted at max speed.
     double wormDistMult = 3 * ArmConstants.WormMotorRotationsPerInch / 5676;
 
-    double extend_kP = 0.0004;
+    double extend_kP = 0.00035;
     double extend_kI = 0.00000007;
     double extend_kD = 0.0;
     double extend_kFF = 0.00;
@@ -69,6 +69,7 @@ public class ArmSubsystem extends SubsystemBase {
         worm.restoreFactoryDefaults();
         extend.restoreFactoryDefaults();
         extend.setIdleMode(IdleMode.kBrake);
+        extend.setSmartCurrentLimit(50);
         worm.setIdleMode(IdleMode.kBrake);
         claw.setIdleMode(IdleMode.kCoast);
         worm.setInverted(true);
@@ -149,6 +150,7 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("ExtendPosFbk", extendEncoder.getPosition());
             SmartDashboard.putNumber("ExtendPosRef", extendPosRef);
             SmartDashboard.putNumber("WormPosRef", wormPosRef);
+            SmartDashboard.putNumber("ExtendCurrent", extend.getOutputCurrent());
         }
 
         if (tunePidMode)
@@ -198,9 +200,32 @@ public class ArmSubsystem extends SubsystemBase {
         wormPosRef = ArmConstants.WormPositionMin * ArmConstants.WormMotorRotationsPerInch;
     }
 
+    private int currentMaxCount;
+    private double minPos;
 
     private void sendExtendPosToPidController() {
-        extendPidControl.setReference(extendPosRef, ControlType.kSmartMotion);
+        //the cord or the extend motor can wrap differently such that if we have a zero reference
+        // we may never be able to get there, causing the motor to stall and overheat. Detect that
+        if (extendPosRef == 0)
+        {
+            double posFbk = extendEncoder.getPosition();
+            //if we are within 6 motor terms and our current rises, then set the position ref to match where we are to prevent stall.
+            if (posFbk < 6 && extend.getOutputCurrent() > 20)
+            {
+                currentMaxCount++;
+                if (currentMaxCount > 50)
+                    minPos = posFbk + 1;
+            }
+        }
+        else
+        {
+            currentMaxCount = 0;
+            minPos = 0;
+        }
+        if (extendPosRef < minPos)
+            extendPidControl.setReference(minPos, ControlType.kSmartMotion);
+        else
+            extendPidControl.setReference(extendPosRef, ControlType.kSmartMotion);
     }
 
     /**

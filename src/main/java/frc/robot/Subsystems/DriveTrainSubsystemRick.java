@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Subsystems.Constant.ArmConstants;
 import frc.robot.Subsystems.Constant.DebugLevel;
 import frc.robot.Subsystems.Constant.DebugSetting;
 import frc.robot.Subsystems.Constant.DriveConstants;
@@ -45,8 +46,10 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         private SwerveDriveOdometry swerveDriveOdometry;
         private Pose2d robotPose;
         private SwerveModule[] modules;
+        private boolean spinFlag;
+        private ArmSubsystem armForAuto;
     
-        public DriveTrainSubsystemRick() {
+        public DriveTrainSubsystemRick(ArmSubsystem arm) {
 //            gyro = new ADIS16448_IMU();
             gyro = new Pigeon2(DriveConstants.PigeonID);
             UpdateGyro();
@@ -61,6 +64,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             modules = new SwerveModule[] {LF, RF, LB, RB};
             parkFlag = false;
             doneFlag = false;
+            armForAuto = arm;
         }
 
         public Rotation2d getGyroHeading(){
@@ -173,22 +177,44 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         public void setFlag() {
             parkFlag = false;
             doneFlag = false;
+            spinFlag = false;
         }
 
         public void heyAreWeUpYet() {
             if(doneFlag) {
 
-            } else if(Math.abs(gyro.getRoll()) < 11.9 && parkFlag){
+            } else if(Math.abs(gyro.getRoll()) < 10 && parkFlag){
                 //System.out.println("up");
                 this.drive(new Translation2d(0, 0.1), 0);
                 doneFlag = true;
-            }else if(Math.abs(gyro.getRoll()) > 12.1) {
-                this.drive(new Translation2d(0.8, 0), 0);
+            }else {
+            // }else if(Math.abs(gyro.getRoll()) > 10.5) {
+                this.drive(new Translation2d(-0.8, 0), 0);
                 //System.out.println("flag");
                 parkFlag = true;
+            }
+            // } else {
+            //     this.drive(new Translation2d(-2, 0), 0);
+            //     //System.out.println("back");
+            // }
+        }
+
+        public void yeet(int inv) {
+            if(Math.abs(Math.abs(this.getGyroHeading().getDegrees()) % 180 - 90) < 10) {
+                armForAuto.zoop(0.5 * ArmConstants.ClawMaxPercent * 6000);
+        
+            }
+
+        }
+
+        public void spiiiiiiin(double target, int inv) {
+            if(Math.abs((int)(this.getGyroHeading().getDegrees()) % 360 - target) < 10) {
+                spinFlag = true;
+            }
+            if(!spinFlag) {
+                this.drive(new Translation2d(), 0.5 * DriveConstants.maxRobotSpeedmps * inv);
             } else {
-                this.drive(new Translation2d(2, 0), 0);
-                //System.out.println("back");
+                this.drive(new Translation2d(), 0);
             }
         }
 }

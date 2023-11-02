@@ -28,20 +28,26 @@ public class NoMovement extends SequentialCommandGroup {
                     arm.wormFullUp();
                     //System.out.println("running arm");
                 }, arm),
-                new WaitCommand(2.5),
+                new WaitCommand(2),
                 new InstantCommand(() -> {
                     arm.extendFullOut();
                     arm.wormIncremental(true, false);
+                    drive.drive(new Translation2d(-1, 0), 0);
                 }),
-                new WaitCommand(3),
+                new WaitCommand(1.2),
                 new InstantCommand(() -> {
+                    drive.drive(new Translation2d(), 0);
+                    //place the cone
+                    arm.wormFullUp();
                     arm.wormIncremental(false, true);
-                    arm.wormIncremental(false, false);
                 }),
-                new WaitCommand(1),
+                new WaitCommand(1.1),
                 new InstantCommand(() -> {
                     arm.extendFullIn();
-                    arm.zoop(0.5 * ArmConstants.ClawMaxPercent * 6000);
+                }),
+                new WaitCommand(0.2),
+                new InstantCommand(() -> {
+                    arm.zoop(0.3 * ArmConstants.ClawMaxPercent * 6000);
                 })
             )
         );

@@ -39,7 +39,7 @@ public class TrajectoryFollower extends CommandBase {
   public void initialize() {
     initPose = trajectory.getInitialPose();
     //System.out.println("Init :)");
-    drive.ZeroDriveSensors(new Pose2d(new Translation2d(initPose.getX(), initPose.getY() * inverted), initPose.getRotation()));
+    drive.ZeroDriveSensors(new Pose2d(new Translation2d(initPose.getX() * inverted, initPose.getY() * inverted), initPose.getRotation()));
     timer.reset();
     timer.start();
     
@@ -59,9 +59,9 @@ public class TrajectoryFollower extends CommandBase {
     State refState = trajectory.sample(time);
     Pose2d currentPose = drive.getPose();
 
-    xController.setReference(-refState.pose.getX());
-    yController.setReference(-inverted * refState.pose.getY());
-    thetaController.setReference(-refState.pose.getRotation().getRadians() * inverted);
+    xController.setReference(inverted * -refState.pose.getX());
+    yController.setReference(inverted * -refState.pose.getY());
+    thetaController.setReference(-refState.pose.getRotation().getRadians());
 
     // double vx = xController.calculate(-currentPose.getX(), dt) - refState.velocity.x;
     // double vy = yController.calculate(-currentPose.getY(), dt) - refState.velocity.y;
@@ -74,9 +74,9 @@ public class TrajectoryFollower extends CommandBase {
     SmartDashboard.putNumber("Yref", refState.pose.getY());
     SmartDashboard.putNumber("Zref", refState.pose.getRotation().getRadians());
 
-    double vx = -xController.calculate(currentPose.getX(), dt)+refState.velocity.x;
+    double vx = -xController.calculate(currentPose.getX(), dt)+refState.velocity.x * inverted;
     double vy = -yController.calculate(currentPose.getY(), dt)+refState.velocity.y * inverted;
-    double omega = -thetaController.calculate(-currentPose.getRotation().getRadians(), dt)+ refState.velocity.z * inverted;
+    double omega = -thetaController.calculate(-currentPose.getRotation().getRadians(), dt)+ refState.velocity.z;
 
     SmartDashboard.putNumber("AutoTime", dt);
     SmartDashboard.putNumber("vxauto", vx);

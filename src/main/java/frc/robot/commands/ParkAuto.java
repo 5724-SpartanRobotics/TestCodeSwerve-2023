@@ -2,6 +2,9 @@ package frc.robot.commands;
 
 import java.time.Instant;
 
+import org.opencv.core.RotatedRect;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -32,27 +35,40 @@ public class ParkAuto extends SequentialCommandGroup {
                 new InstantCommand(() -> {
                     arm.extendFullOut();
                     arm.wormIncremental(true, false);
+                    drive.drive(new Translation2d(-1, 0), 0);
                 }),
                 new WaitCommand(1.2),
                 new InstantCommand(() -> {
+                    drive.drive(new Translation2d(), 0);
                     //place the cone
                     arm.wormFullUp();
                     arm.wormIncremental(false, true);
                 }),
-                new WaitCommand(1.3),
+                new WaitCommand(1.1),
                 new InstantCommand(() -> {
                     arm.extendFullIn();
+                }),
+                new WaitCommand(0.2),
+                new InstantCommand(() -> {
                     arm.zoop(0.3 * ArmConstants.ClawMaxPercent * 6000);
-                })
+                    drive.drive(new Translation2d(2, 0), 0);
+                }),
+                new WaitCommand(0.5),
+                new InstantCommand(() -> {
+                    arm.wormFullDown();
+                }),
+                new WaitCommand(3),
+                new InstantCommand(() -> {
+                    drive.drive(new Translation2d(0, 0), 0);
+                }),
+                new WaitCommand(1.5),
+                new InstantCommand(() -> {
+                    drive.drive(new Translation2d(-2, 0), 0);
+                }),
+                new WaitCommand(2)
             ),
             new ParallelDeadlineGroup(
                 new WaitCommand(15),
-                new SequentialCommandGroup(
-                    new WaitCommand(0.5),
-                    new InstantCommand(() -> {
-                        arm.wormFullDown();
-                    })
-                ),
                 new RunCommand(() -> {
                     drive.heyAreWeUpYet();
                 }, drive)

@@ -17,9 +17,9 @@ import frc.robot.commands.HelixAutoTools.TrajectoriesManager;
 import frc.robot.commands.HelixAutoTools.TrajectoryFollower;
 import frc.robot.commands.HelixAutoTools.Paths.Path;
 
-public class RedBump2Piece extends SequentialCommandGroup {
-    public RedBump2Piece(DriveTrainSubsystemRick drive, ArmSubsystem arm, TrajectoriesManager trajectoriesManager) {
-        Path pathing = trajectoriesManager.loadTrajectory("BRBRedBump");
+public class Red2Park extends SequentialCommandGroup {
+    public Red2Park(DriveTrainSubsystemRick drive, ArmSubsystem arm, TrajectoriesManager trajectoriesManager) {
+        Path pathing = trajectoriesManager.loadTrajectory("WithAParkPerhaps");
         addCommands(
             new SequentialCommandGroup(
                 new InstantCommand(() -> {
@@ -50,30 +50,34 @@ public class RedBump2Piece extends SequentialCommandGroup {
                     arm.zoop(0.3 * ArmConstants.ClawMaxPercent * 6000);
                 }),
                 new ParallelDeadlineGroup(
-                    new WaitCommand(20),
-                    new TrajectoryFollower(drive, pathing, true),
+                    new WaitCommand(6),
+                    new TrajectoryFollower(drive, pathing, false),
                     new SequentialCommandGroup(
                         new WaitCommand(0.5),
                         new InstantCommand(() -> {
                             //System.out.println(":)");
                             arm.wormIntakePos();
                         }),
-                        new WaitCommand(1.5),
+                        new WaitCommand(0.8),
                         new InstantCommand(() -> {
                             arm.extendIntakePos();
                             arm.zoop(-1 * ArmConstants.ClawMaxPercent * 6000);
                         }),
-                        new WaitCommand(3),
+                        new WaitCommand(2.2),
                         new InstantCommand(() -> {
                             arm.wormFullUp();
-                            arm.extendFullIn();
-                        }),
-                        new WaitCommand(3.3),
-                        new InstantCommand(() -> {
                             arm.extendFullOut();
-                        })
+                        }),
+                        new WaitCommand(1.5),
+                        new InstantCommand(() -> {
+                            arm.zoop(0.5 * ArmConstants.ClawMaxPercent * 6000);
+                        }),
+                        new WaitCommand(1)
                     )
-                )
+                ),
+                new RunCommand(() -> {
+                    drive.heyAreWeUpYet();
+                }, drive)
             )
         );
     }

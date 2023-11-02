@@ -73,7 +73,7 @@ public class Constant {
         public static double joystickDeadband = 0.1;//a deadband that you must overcome for the joystick input, otherwise we send 0
     }
     public static final class DebugSetting{
-        public static final DebugLevel TraceLevel = DebugLevel.Off;//set this to get more values to smart dashboard.
+        public static final DebugLevel TraceLevel = DebugLevel.Arm;//set this to get more values to smart dashboard.
     }
     public static enum DebugLevel{
         Off,

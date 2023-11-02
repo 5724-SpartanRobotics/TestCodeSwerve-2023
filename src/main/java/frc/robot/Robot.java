@@ -49,6 +49,8 @@ import frc.robot.commands.BlueBumpless2Piece;
 import frc.robot.commands.NoMovement;
 import frc.robot.commands.RedBumpless2Piece;
 import frc.robot.commands.ParkAuto;
+import frc.robot.commands.ParkYeet;
+import frc.robot.commands.Red2Park;
 import frc.robot.commands.RedBump2Piece;
 import frc.robot.commands.HelixAutoTools.TrajectoriesManager;
 import frc.robot.commands.HelixAutoTools.Paths.Path;
@@ -97,6 +99,8 @@ public class Robot extends TimedRobot {
   private Command RedBump;
   private Command parkAuto;
   private Command cringeAuto;
+  private Command RedExperimental;
+  private Command Yeet;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -111,11 +115,12 @@ public class Robot extends TimedRobot {
     //System.out.println(Filesystem.getDeployDirectory());
     trajectoriesManager.loadAllTrajectories();
     //if using rick's subsystem uncoment these
-    drive = new DriveTrainSubsystemRick();
-    drive.setDefaultCommand(new TeleopSwerve(drive, drivestick));
 
     arm = new ArmSubsystem();
     arm.setDefaultCommand(new ArmControl(arm, operator));
+
+    drive = new DriveTrainSubsystemRick(arm);
+    drive.setDefaultCommand(new TeleopSwerve(drive, drivestick));
 
     LedSubsystem ledSubsystem = new LedSubsystem(0, arm);
     // ledSubsystem.setDefaultCommand(new RunCommand(() -> {ledSubsystem.Yellow();}, ledSubsystem));
@@ -126,6 +131,8 @@ public class Robot extends TimedRobot {
     cringeAuto = new NoMovement(drive, arm, trajectoriesManager);
     RedBump = new RedBump2Piece(drive, arm, trajectoriesManager);
     BlueBump = new BlueBump2Piece(drive, arm, trajectoriesManager);
+    RedExperimental = new Red2Park(drive, arm, trajectoriesManager);
+    Yeet = new ParkYeet(drive, arm, trajectoriesManager, 1);
 
     dummyArray[0] = -1;
     m_chooser.setDefaultOption("Blue Bumpless", BlueBumpless);
@@ -134,6 +141,8 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Blue Bump", BlueBump);
     m_chooser.addOption("Park", parkAuto);
     m_chooser.addOption("Cringe", cringeAuto);
+    m_chooser.addOption("Red Win", RedExperimental);
+    m_chooser.addOption("Yeet", Yeet);
     SmartDashboard.putData("Auto choices", m_chooser);
 
     SmartDashboard.putNumber("setpos", 0);
@@ -205,56 +214,60 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if(drivestick.getRawButtonPressed(2)) {
-      
-    }
-    if(selectionPhase == 0 && drivestick.getRawButtonPressed(8)) {
-      poseFinder = 1;
-      selectionPhase = 1;
-      // TODO red vs blue
-      vision.setTag(1);
-    } else if(selectionPhase == 0 && drivestick.getRawButtonPressed(10)) {
-      poseFinder = 1;
-      selectionPhase = 1;
-      vision.setTag(2);
-    } else if(selectionPhase == 0 && drivestick.getRawButtonPressed(12)) {
-      poseFinder = 1;
-      selectionPhase = 1;
-      vision.setTag(3);
-    }
-
-    // If we see it, set the pose
-    if(setPos != null && !setPos.isScheduled() && poseFinder != 0 && vision.foundTag() && !drivestick.getRawButton(7)) {
-      drive.ZeroDriveSensors(vision.getSetPose());
-    }
-    if(selectionPhase == 1 && drivestick.getRawButtonPressed(8)) {
-      setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(-0.4, 0.6), new Rotation2d(3.14)), true);
-      //System.out.println(":)");
-      poseFinder = 0;
-      selectionPhase = 0;
-    } else if(selectionPhase == 1 && drivestick.getRawButtonPressed(10)) {
-      setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(-0.4, 0), new Rotation2d(3.14)), true);
-      //System.out.println(":)");
-      poseFinder = 0;
-      selectionPhase = 0;
-    } else if(selectionPhase == 1 && drivestick.getRawButtonPressed(12)) {
-      setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(-0.4, -0.7), new Rotation2d(3.14)), true);
-      //System.out.println(":)");
-      poseFinder = 0;
-      selectionPhase = 0;
-    }
-
-    if(drivestick.getRawButtonPressed(7) && setPos != null) {
+    if(drivestick.getRawButtonPressed(8)) {
+      setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(0, 0), new Rotation2d(3.14)));
       setPos.schedule();
     }
-    // Cancel on button 
-    if(drivestick.getRawButtonPressed(9)) {
-      if(setPos != null) {
-        setPos.cancel();
-      }
-      poseFinder = 0;
-      selectionPhase = 0;
-    }
+    // if(drivestick.getRawButtonPressed(2)) {
+      
+    // }
+    // if(selectionPhase == 0 && drivestick.getRawButtonPressed(8)) {
+    //   poseFinder = 1;
+    //   selectionPhase = 1;
+    //   // TODO red vs blue
+    //   vision.setTag(1);
+    // } else if(selectionPhase == 0 && drivestick.getRawButtonPressed(10)) {
+    //   poseFinder = 1;
+    //   selectionPhase = 1;
+    //   vision.setTag(2);
+    // } else if(selectionPhase == 0 && drivestick.getRawButtonPressed(12)) {
+    //   poseFinder = 1;
+    //   selectionPhase = 1;
+    //   vision.setTag(3);
+    // }
+
+    // // If we see it, set the pose
+    // if(setPos != null && !setPos.isScheduled() && poseFinder != 0 && vision.foundTag() && !drivestick.getRawButton(7)) {
+    //   drive.ZeroDriveSensors(vision.getSetPose());
+    // }
+    // if(selectionPhase == 1 && drivestick.getRawButtonPressed(8)) {
+    //   setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(-0.4, 0.6), new Rotation2d(3.14)), true);
+    //   //System.out.println(":)");
+    //   poseFinder = 0;
+    //   selectionPhase = 0;
+    // } else if(selectionPhase == 1 && drivestick.getRawButtonPressed(10)) {
+    //   setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(-0.4, 0), new Rotation2d(3.14)), true);
+    //   //System.out.println(":)");
+    //   poseFinder = 0;
+    //   selectionPhase = 0;
+    // } else if(selectionPhase == 1 && drivestick.getRawButtonPressed(12)) {
+    //   setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(-0.4, -0.7), new Rotation2d(3.14)), true);
+    //   //System.out.println(":)");
+    //   poseFinder = 0;
+    //   selectionPhase = 0;
+    // }
+
+    // if(drivestick.getRawButtonPressed(7) && setPos != null) {
+    //   setPos.schedule();
+    // }
+    // // Cancel on button 
+    // if(drivestick.getRawButtonPressed(9)) {
+    //   if(setPos != null) {
+    //     setPos.cancel();
+    //   }
+    //   poseFinder = 0;
+    //   selectionPhase = 0;
+    // }
   }
 
   /** This function is called once when the robot is disabled. */
