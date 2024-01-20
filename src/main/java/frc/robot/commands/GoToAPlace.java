@@ -50,20 +50,41 @@ public class GoToAPlace extends CommandBase {
     double dt = time - lastTime;
     Pose2d currentPose = drive.getPose();
 
-    // xController.setReference(-refState.pose.getX());
-    // yController.setReference(-refState.pose.getY());
+    xController.setReference(-targetPose.getX());
+    yController.setReference(-targetPose.getY());
     thetaController.setReference(-targetPose.getRotation().getRadians());
 
     // double vx = xController.calculate(-currentPose.getX(), dt) - refState.velocity.x;
     // double vy = yController.calculate(-currentPose.getY(), dt) - refState.velocity.y;
     // double omega = -thetaController.calculate(-currentPose.getRotation().getRadians(), dt) + refState.velocity.z;
 
-    // double vx = -xController.calculate(currentPose.getX(), dt);
-    // double vy = -yController.calculate(currentPose.getY(), dt);
+    double vx = -xController.calculate(currentPose.getX(), dt);
+    double vy = -yController.calculate(currentPose.getY(), dt);
     double omega = -thetaController.calculate(-currentPose.getRotation().getRadians(), dt);
 
+    int cap = 2;
+    int omegacap = 3;
     // Very dumb fix, should be x,y
-    drive.drive(new Translation2d(0, 0), omega);
+    if(vx > cap) {
+      vx = cap;
+    } else if(vx < -cap) {
+      vx = -cap;
+    }
+    if(vy > cap) {
+      vy = cap;
+    } else if(vy < -cap) {
+      vy = -cap;
+    }
+    if(omega > omegacap ) {
+      omega = omegacap;
+    } else if(omega < -omegacap) {
+      omega = -omegacap;
+    }
+
+    drive.drive(new Translation2d(vx, vy), omega);
+    System.out.println(vx);
+    System.out.println(vy);
+    System.out.println(omega);
     lastTime = time;
   }
 

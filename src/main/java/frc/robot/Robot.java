@@ -121,6 +121,8 @@ public class Robot extends TimedRobot {
 
     drive = new DriveTrainSubsystemRick(arm);
     drive.setDefaultCommand(new TeleopSwerve(drive, drivestick));
+    // TODO this is bad and should not be here fix it its for debugging etc etc etc
+    drive.ZeroDriveSensors(new Pose2d(new Translation2d(0, 0), new Rotation2d()));
 
     LedSubsystem ledSubsystem = new LedSubsystem(0, arm);
     // ledSubsystem.setDefaultCommand(new RunCommand(() -> {ledSubsystem.Yellow();}, ledSubsystem));
@@ -215,7 +217,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     if(drivestick.getRawButtonPressed(8)) {
-      setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(0, 0), new Rotation2d(3.14)));
+      setPos = new GoToAPlace(drive, new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
       setPos.schedule();
     }
     // if(drivestick.getRawButtonPressed(2)) {
